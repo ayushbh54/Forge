@@ -1,0 +1,711 @@
+import 'package:flutter/material.dart';
+import '../../core/theme/app_theme.dart';
+import '../ai/gemini_brain_screen.dart';
+import '../ai/institutional_memory_screen.dart';
+import '../ai/risk_radar_screen.dart';
+import '../ai/voice_assistant_screen.dart';
+import '../analytics/evm_dashboard_screen.dart';
+import '../audit/audit_screen.dart';
+import '../conflicts/conflicts_screen.dart';
+import '../contracts/variation_order_screen.dart';
+import '../contracts/liquidated_damages_screen.dart';
+import '../contracts/dispute_adjudication_screen.dart';
+import '../diary/site_diary_screen.dart';
+import '../documents/documents_screen.dart';
+import '../documents/pdf_intelligence_screen.dart';
+import '../equipment/equipment_tracking_screen.dart';
+import '../hse/safety_management_screen.dart';
+import '../linking/linking_bridge_screen.dart';
+import '../materials/materials_screen.dart';
+import '../materials/qr_material_scanner_screen.dart';
+import '../materials/weighbridge_ticket_screen.dart';
+import '../ai/dialect_speech_tuner_screen.dart';
+import '../reports/executive_report_screen.dart';
+import '../schedule/wbs_gantt_screen.dart';
+import '../settings/gemini_keys_screen.dart';
+import '../settings/settings_screen.dart';
+import '../portal/stakeholder_portal_screen.dart';
+import '../weather/weather_impact_screen.dart';
+import '../workforce/contractor_scorecard_screen.dart';
+import '../workforce/hr_module_screen.dart';
+import '../workforce/supervisor_visit_screen.dart';
+import '../map/digital_twin_site_map_screen.dart';
+import '../quality/pipeline_ndt_screen.dart';
+import '../engineering/soil_strata_log_screen.dart';
+
+class _MenuItemConfig {
+  final String label;
+  final String subtitle;
+  final String category;
+  final IconData icon;
+  final Color color;
+  final Widget screen;
+  final String? badge;
+
+  const _MenuItemConfig({
+    required this.label,
+    required this.subtitle,
+    required this.category,
+    required this.icon,
+    required this.color,
+    required this.screen,
+    this.badge,
+  });
+}
+
+class MoreScreen extends StatefulWidget {
+  const MoreScreen({super.key});
+
+  @override
+  State<MoreScreen> createState() => _MoreScreenState();
+}
+
+class _MoreScreenState extends State<MoreScreen> {
+  String _searchQuery = '';
+  String _selectedCategory = 'ALL';
+
+  static const List<_MenuItemConfig> _allMenuItems = [
+    // Digital Twin 3D / Isometric GIS Site Map
+    _MenuItemConfig(
+      label: 'Digital Twin 3D',
+      subtitle: 'Oil India Duliajan GIS & 3D layout',
+      category: 'Field & Operations',
+      icon: Icons.view_in_ar_rounded,
+      color: Color(0xFF38BDF8),
+      screen: DigitalTwinSiteMapScreen(),
+      badge: '3D GIS',
+    ),
+    // Soil Strata & Pipeline Trenching Geotechnical Log
+    _MenuItemConfig(
+      label: 'Soil Strata Log',
+      subtitle: 'Trenching strata & OISD-141 cover',
+      category: 'Field & Operations',
+      icon: Icons.terrain_rounded,
+      color: Color(0xFF8D6E63),
+      screen: SoilStrataLogScreen(),
+      badge: 'OISD-141',
+    ),
+    // Weather & Environmental Intelligence
+    _MenuItemConfig(
+      label: 'Weather Impact',
+      subtitle: 'Monsoon telemetry & alerts',
+      category: 'Field & Operations',
+      icon: Icons.thunderstorm_rounded,
+      color: Color(0xFF00E5FF),
+      screen: WeatherImpactScreen(),
+      badge: 'LIVE',
+    ),
+    // EVM & Cost Analytics
+    _MenuItemConfig(
+      label: 'EVM Analytics',
+      subtitle: 'Earned Value & SPI/CPI',
+      category: 'Intelligence',
+      icon: Icons.analytics_rounded,
+      color: Color(0xFFA78BFA),
+      screen: EvmDashboardScreen(),
+      badge: 'S-Curve',
+    ),
+    // Heavy Equipment & Telematics
+    _MenuItemConfig(
+      label: 'Equipment Tracking',
+      subtitle: 'Heavy plant telemetry & fuel',
+      category: 'Field & Operations',
+      icon: Icons.precision_manufacturing_rounded,
+      color: Color(0xFFFBBF24),
+      screen: EquipmentTrackingScreen(),
+      badge: 'IoT',
+    ),
+    // AI Risk Radar
+    _MenuItemConfig(
+      label: 'AI Risk Radar',
+      subtitle: 'Monte Carlo schedule simulations',
+      category: 'Intelligence',
+      icon: Icons.radar_rounded,
+      color: Color(0xFFFF5252),
+      screen: RiskRadarScreen(),
+      badge: 'AI',
+    ),
+    // Institutional Memory AI Query Engine
+    _MenuItemConfig(
+      label: 'Institutional Memory',
+      subtitle: 'Historical Oil India lessons (2018-2025)',
+      category: 'Intelligence',
+      icon: Icons.history_edu_rounded,
+      color: Color(0xFF4EDEA3),
+      screen: InstitutionalMemoryScreen(),
+      badge: '2018-25',
+    ),
+    // Executive Progress Dossier & PDF Export
+    _MenuItemConfig(
+      label: 'Executive Report',
+      subtitle: 'PDF dossier, health index & export',
+      category: 'Governance',
+      icon: Icons.picture_as_pdf_rounded,
+      color: Color(0xFF38BDF8),
+      screen: ExecutiveReportScreen(),
+      badge: 'PDF',
+    ),
+    // Contractor & Gang Scorecard
+    _MenuItemConfig(
+      label: 'Contractor Scorecard',
+      subtitle: 'Live ratings & PQ intelligence',
+      category: 'Governance',
+      icon: Icons.leaderboard_rounded,
+      color: Color(0xFF38BDF8),
+      screen: ContractorScorecardScreen(),
+      badge: 'FIDIC',
+    ),
+    // Multi-Stakeholder Collaboration Portal
+    _MenuItemConfig(
+      label: 'Stakeholder Portal',
+      subtitle: 'Client, EPC, TPIA & Foreman Hub',
+      category: 'Governance',
+      icon: Icons.hub_rounded,
+      color: Color(0xFF38BDF8),
+      screen: StakeholderPortalScreen(),
+      badge: '4-TIER',
+    ),
+    // FIDIC Clause 13 Variations & Change Orders
+    _MenuItemConfig(
+      label: 'FIDIC Cl. 13 Variations',
+      subtitle: 'Scope change & variation register',
+      category: 'Governance',
+      icon: Icons.published_with_changes_rounded,
+      color: Color(0xFFFFB95F),
+      screen: VariationOrderScreen(),
+      badge: 'Cl. 13',
+    ),
+    // FIDIC Sub-Clause 8.7 Delay Damages & Liquidated Damages Calculator
+    _MenuItemConfig(
+      label: 'FIDIC Cl. 8.7 Delay Damages',
+      subtitle: 'Liquidated damages & concurrency offset',
+      category: 'Governance',
+      icon: Icons.gavel_rounded,
+      color: Color(0xFFEF4444),
+      screen: LiquidatedDamagesScreen(),
+      badge: 'Cl. 8.7',
+    ),
+    // FIDIC Clause 20 Dispute Adjudication Board (DAB) & Arbitration Claims
+    _MenuItemConfig(
+      label: 'FIDIC Cl. 20 DAB & Claims',
+      subtitle: 'Dispute board, dossiers & Cl. 14.8 interest',
+      category: 'Governance',
+      icon: Icons.balance_rounded,
+      color: Color(0xFF38BDF8),
+      screen: DisputeAdjudicationScreen(),
+      badge: 'Cl. 20',
+    ),
+    // FIDIC Site Diary
+    _MenuItemConfig(
+      label: 'FIDIC Site Diary',
+      subtitle: 'Cl. 4.20 cryptographic log',
+      category: 'Field & Operations',
+      icon: Icons.menu_book_rounded,
+      color: Color(0xFFFFB95F),
+      screen: SiteDiaryScreen(),
+      badge: 'SHA-256',
+    ),
+    // WBS L1-L6 Interactive Gantt & Timeline Cascade
+    _MenuItemConfig(
+      label: 'WBS Gantt Cascade',
+      subtitle: 'L1–L6 Primavera P6 critical path',
+      category: 'Field & Operations',
+      icon: Icons.account_tree_rounded,
+      color: Color(0xFF38BDF8),
+      screen: WbsGanttScreen(),
+      badge: 'L1-L6',
+    ),
+    // HSE Safety Management
+    _MenuItemConfig(
+      label: 'HSE Safety',
+      subtitle: 'Digital permits & incident logs',
+      category: 'Field & Operations',
+      icon: Icons.health_and_safety_rounded,
+      color: Color(0xFF4EDEA3),
+      screen: SafetyManagementScreen(),
+      badge: 'Zero LTI',
+    ),
+    // Materials Management
+    _MenuItemConfig(
+      label: 'Materials',
+      subtitle: 'GRN & GIN stock ledger',
+      category: 'Field & Operations',
+      icon: Icons.inventory_2_rounded,
+      color: Color(0xFFFB923C),
+      screen: MaterialsScreen(),
+    ),
+    // Material QR & Barcode Scanner
+    _MenuItemConfig(
+      label: 'Material Tag Scanner',
+      subtitle: 'Laser QR/Barcode QA & GRN/GIN',
+      category: 'Field & Operations',
+      icon: Icons.qr_code_scanner_rounded,
+      color: Color(0xFF38BDF8),
+      screen: QrMaterialScannerScreen(),
+      badge: 'LIVE QA',
+    ),
+    // Material Weighbridge & Delivery Challan Verification
+    _MenuItemConfig(
+      label: 'Weighbridge & DC Verify',
+      subtitle: 'Gate pass, Net weight & 1-tap GRN',
+      category: 'Field & Operations',
+      icon: Icons.scale_rounded,
+      color: Color(0xFFFFB95F),
+      screen: WeighbridgeTicketScreen(),
+      badge: '±1.5% TOL',
+    ),
+    // Pipeline Weld NDT & Hydrostatic Testing
+    _MenuItemConfig(
+      label: 'Pipeline NDT & Hydrotest',
+      subtitle: 'Radiography, UT/MPT & 112.5 Bar test',
+      category: 'Field & Operations',
+      icon: Icons.speed_rounded,
+      color: Color(0xFF4EDEA3),
+      screen: PipelineNdtScreen(),
+      badge: '18" X70',
+    ),
+    // Contractual Conflicts
+    _MenuItemConfig(
+      label: 'Conflicts',
+      subtitle: 'Dispute detection & triage',
+      category: 'Governance',
+      icon: Icons.gavel_rounded,
+      color: Color(0xFFF43F5E),
+      screen: ConflictsScreen(),
+    ),
+    // Tamper-Proof Audit Trail
+    _MenuItemConfig(
+      label: 'Audit Trail',
+      subtitle: 'Immutable system change-logs',
+      category: 'Governance',
+      icon: Icons.history_rounded,
+      color: Color(0xFF60A5FA),
+      screen: AuditScreen(),
+    ),
+    // AI Brain
+    _MenuItemConfig(
+      label: 'AI Brain',
+      subtitle: 'Gemini NLP copilot & triangulation',
+      category: 'Intelligence',
+      icon: Icons.psychology_rounded,
+      color: Color(0xFFC084FC),
+      screen: GeminiBrainScreen(),
+      badge: 'Gemini',
+    ),
+    // Multilingual Voice Assistant
+    _MenuItemConfig(
+      label: 'Voice Assistant',
+      subtitle: '10 Indic dialect site assistant',
+      category: 'Intelligence',
+      icon: Icons.mic_rounded,
+      color: Color(0xFF34D399),
+      screen: VoiceAssistantScreen(),
+      badge: 'Indic',
+    ),
+    // Voice Dialect & Lexicon Tuner
+    _MenuItemConfig(
+      label: 'Dialect & Lexicon Tuner',
+      subtitle: '5 Indic dialects, piping jargon & acoustic tuner',
+      category: 'Intelligence',
+      icon: Icons.tune_rounded,
+      color: Color(0xFF38BDF8),
+      screen: DialectSpeechTunerScreen(),
+      badge: 'Bhashini',
+    ),
+    // PDF Intelligence
+    _MenuItemConfig(
+      label: 'PDF Intelligence',
+      subtitle: 'OCR entity extraction & specs',
+      category: 'Intelligence',
+      icon: Icons.picture_as_pdf_rounded,
+      color: Color(0xFFF87171),
+      screen: PdfIntelligenceScreen(),
+    ),
+    // Project Documents & Engineering Drawings
+    _MenuItemConfig(
+      label: 'Documents',
+      subtitle: 'Drawings, contracts & ITP specs',
+      category: 'Field & Operations',
+      icon: Icons.folder_rounded,
+      color: Color(0xFFFBBF24),
+      screen: DocumentsScreen(),
+      badge: 'CAD/PDF',
+    ),
+    // Linking Bridge
+    _MenuItemConfig(
+      label: 'Linking Bridge',
+      subtitle: 'P6 & BIM cross-link matching',
+      category: 'Field & Operations',
+      icon: Icons.hub_rounded,
+      color: Color(0xFF2DD4BF),
+      screen: LinkingBridgeScreen(),
+    ),
+    // Geofenced Supervisor Visits
+    _MenuItemConfig(
+      label: 'Supervisor Visit',
+      subtitle: 'Geofenced spot checks & punchlist',
+      category: 'Field & Operations',
+      icon: Icons.visibility_rounded,
+      color: Color(0xFF38BDF8),
+      screen: SupervisorVisitScreen(),
+    ),
+    // HR & Labor Module
+    _MenuItemConfig(
+      label: 'HR Module',
+      subtitle: 'Wages, attendance & biometric sync',
+      category: 'Governance',
+      icon: Icons.badge_rounded,
+      color: Color(0xFF818CF8),
+      screen: HrModuleScreen(),
+    ),
+    // Gemini Brain API Keys Architecture
+    _MenuItemConfig(
+      label: 'Gemini Brain Keys',
+      subtitle: 'Multi-key AI allocation & quota tuning',
+      category: 'Governance',
+      icon: Icons.vpn_key_rounded,
+      color: Color(0xFF38BDF8),
+      screen: GeminiKeysScreen(),
+      badge: 'Multi-Key',
+    ),
+    // System Settings
+    _MenuItemConfig(
+      label: 'Settings',
+      subtitle: 'App preferences & language',
+      category: 'Governance',
+      icon: Icons.settings_rounded,
+      color: Color(0xFF94A3B8),
+      screen: SettingsScreen(),
+    ),
+  ];
+
+  List<_MenuItemConfig> get _filteredItems {
+    return _allMenuItems.where((item) {
+      final matchesSearch = item.label.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          item.subtitle.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          item.category.toLowerCase().contains(_searchQuery.toLowerCase());
+
+      if (!matchesSearch) return false;
+
+      if (_selectedCategory == 'ALL') return true;
+      return item.category == _selectedCategory;
+    }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filtered = _filteredItems;
+
+    return Scaffold(
+      backgroundColor: AppTheme.background,
+      appBar: AppBar(
+        backgroundColor: AppTheme.surface,
+        elevation: 0,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Text(
+              'Operations Suite',
+              style: TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 2),
+            Text(
+              'Nirmaan OS Enterprise Modules',
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: CustomScrollView(
+        slivers: [
+          // Banner & Search Header
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Industrial Suite Overview Banner
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceCard,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppTheme.border),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primary.withAlpha(40),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.apps_rounded,
+                            color: AppTheme.primaryLight,
+                            size: 22,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    '${_allMenuItems.length} ENTERPRISE MODULES',
+                                    style: const TextStyle(
+                                      color: AppTheme.primaryLight,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.8,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.tertiary.withAlpha(30),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Text(
+                                      'ALL ONLINE',
+                                      style: TextStyle(
+                                        color: AppTheme.tertiary,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 3),
+                              const Text(
+                                'Complete telemetry, analytics, FIDIC logs & safety control suite.',
+                                style: TextStyle(
+                                  color: AppTheme.textSecondary,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Search Bar
+                  TextField(
+                    style: const TextStyle(color: AppTheme.textPrimary, fontSize: 13),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintText: 'Search modules, telemetry, safety, analytics...',
+                      hintStyle: const TextStyle(color: AppTheme.textMuted, fontSize: 12),
+                      prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary, size: 18),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.close, color: AppTheme.textSecondary, size: 16),
+                              onPressed: () => setState(() => _searchQuery = ''),
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: AppTheme.surfaceCard,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppTheme.border),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppTheme.border),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppTheme.primary, width: 1.5),
+                      ),
+                    ),
+                    onChanged: (val) => setState(() => _searchQuery = val),
+                  ),
+                  const SizedBox(height: 10),
+                  // Category Filter Chips
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildCategoryChip('ALL', 'All Modules (${_allMenuItems.length})'),
+                        const SizedBox(width: 8),
+                        _buildCategoryChip('Field & Operations', 'Field & Ops (${_allMenuItems.where((m) => m.category == 'Field & Operations').length})'),
+                        const SizedBox(width: 8),
+                        _buildCategoryChip('Intelligence', 'AI & Analytics (${_allMenuItems.where((m) => m.category == 'Intelligence').length})'),
+                        const SizedBox(width: 8),
+                        _buildCategoryChip('Governance', 'Governance (${_allMenuItems.where((m) => m.category == 'Governance').length})'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Modules Grid
+          filtered.isEmpty
+              ? SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(40),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.search_off_rounded, color: AppTheme.textMuted, size: 40),
+                        SizedBox(height: 12),
+                        Text(
+                          'No modules match your search',
+                          style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.88,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final item = filtered[index];
+                        return _buildModuleCard(context, item);
+                      },
+                      childCount: filtered.length,
+                    ),
+                  ),
+                ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryChip(String categoryKey, String label) {
+    final isSelected = _selectedCategory == categoryKey;
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        if (selected) {
+          setState(() => _selectedCategory = categoryKey);
+        }
+      },
+      backgroundColor: AppTheme.surfaceCard,
+      selectedColor: AppTheme.primary.withAlpha(50),
+      labelStyle: TextStyle(
+        color: isSelected ? AppTheme.primaryLight : AppTheme.textSecondary,
+        fontSize: 11,
+        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+      ),
+      side: BorderSide(
+        color: isSelected ? AppTheme.primaryLight : AppTheme.border,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    );
+  }
+
+  Widget _buildModuleCard(BuildContext context, _MenuItemConfig item) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => item.screen),
+          );
+        },
+        borderRadius: BorderRadius.circular(12),
+        splashColor: item.color.withAlpha(40),
+        highlightColor: item.color.withAlpha(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceCard,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppTheme.border.withAlpha(160)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(30),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: item.color.withAlpha(26),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: item.color.withAlpha(80)),
+                    ),
+                    child: Icon(item.icon, color: item.color, size: 24),
+                  ),
+                  if (item.badge != null)
+                    Positioned(
+                      top: -4,
+                      right: -8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1.5),
+                        decoration: BoxDecoration(
+                          color: item.color,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          item.badge!,
+                          style: const TextStyle(
+                            color: Color(0xFF0B1326),
+                            fontSize: 7.5,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                item.label,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  height: 1.2,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

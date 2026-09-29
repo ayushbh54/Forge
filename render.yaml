@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: nirmaan-backend
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: NEXT_TELEMETRY_DISABLED
+        value: 1
+      - key: GEMINI_API_KEY
+        sync: false

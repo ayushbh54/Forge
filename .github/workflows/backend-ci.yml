@@ -1,0 +1,31 @@
+name: Next.js Backend Verification & Type Check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-backend:
+    name: Build & Verify Next.js Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 2. Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: 3. Install Dependencies
+        run: npm ci
+
+      - name: 4. TypeScript Type Check
+        run: npx tsc --noEmit
+
+      - name: 5. Build Next.js Production Bundle
+        run: npm run build
