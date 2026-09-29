@@ -21,6 +21,12 @@ import 'screens/contracts/liquidated_damages_screen.dart';
 import 'screens/contracts/dispute_adjudication_screen.dart';
 import 'screens/map/digital_twin_site_map_screen.dart';
 import 'screens/quality/concrete_pour_qa_screen.dart';
+import 'screens/quality/golden_weld_certification_screen.dart';
+import 'screens/engineering/hdd_crossing_profile_screen.dart';
+import 'screens/operations/scada_telemetry_screen.dart';
+import 'screens/integrity/cathodic_protection_screen.dart';
+import 'screens/operations/commissioning_punchlist_screen.dart';
+import 'screens/safety/scaffolding_inspection_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,6 +67,12 @@ class NirmaanApp extends StatelessWidget {
               '/contracts/dispute_adjudication': (context) => const DisputeAdjudicationScreen(),
               '/digital_twin': (context) => const DigitalTwinSiteMapScreen(),
               '/quality/concrete_pour': (context) => const ConcretePourQaScreen(),
+              '/quality/golden_weld': (context) => const GoldenWeldCertificationScreen(),
+              '/engineering/hdd_crossing_profile': (context) => const HddCrossingProfileScreen(),
+              '/operations/scada_telemetry': (context) => const ScadaTelemetryScreen(),
+              '/integrity/cathodic_protection': (context) => const CathodicProtectionScreen(),
+              '/operations/commissioning_punchlist': (context) => const CommissioningPunchlistScreen(),
+              '/safety/scaffolding_inspection': (context) => const ScaffoldingInspectionScreen(),
             },
           );
         },

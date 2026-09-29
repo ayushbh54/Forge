@@ -15,6 +15,7 @@ import '../documents/documents_screen.dart';
 import '../documents/pdf_intelligence_screen.dart';
 import '../equipment/equipment_tracking_screen.dart';
 import '../hse/safety_management_screen.dart';
+import '../safety/scaffolding_inspection_screen.dart';
 import '../linking/linking_bridge_screen.dart';
 import '../materials/materials_screen.dart';
 import '../materials/qr_material_scanner_screen.dart';
@@ -31,7 +32,12 @@ import '../workforce/hr_module_screen.dart';
 import '../workforce/supervisor_visit_screen.dart';
 import '../map/digital_twin_site_map_screen.dart';
 import '../quality/pipeline_ndt_screen.dart';
+import '../quality/golden_weld_certification_screen.dart';
 import '../engineering/soil_strata_log_screen.dart';
+import '../engineering/hdd_crossing_profile_screen.dart';
+import '../operations/commissioning_punchlist_screen.dart';
+import '../operations/scada_telemetry_screen.dart';
+import '../integrity/cathodic_protection_screen.dart';
 
 class _MenuItemConfig {
   final String label;
@@ -65,6 +71,16 @@ class _MoreScreenState extends State<MoreScreen> {
   String _selectedCategory = 'ALL';
 
   static const List<_MenuItemConfig> _allMenuItems = [
+    // Valve Station SCADA & Remote Telemetry
+    _MenuItemConfig(
+      label: 'SCADA Telemetry',
+      subtitle: 'VS-01 to VS-08, ESDV & LDS leak monitoring',
+      category: 'Field & Operations',
+      icon: Icons.settings_input_composite_rounded,
+      color: Color(0xFF0284C7),
+      screen: ScadaTelemetryScreen(),
+      badge: 'SCADA LIVE',
+    ),
     // Digital Twin 3D / Isometric GIS Site Map
     _MenuItemConfig(
       label: 'Digital Twin 3D',
@@ -84,6 +100,26 @@ class _MoreScreenState extends State<MoreScreen> {
       color: Color(0xFF8D6E63),
       screen: SoilStrataLogScreen(),
       badge: 'OISD-141',
+    ),
+    // HDD River Crossing Geometry & Steering Profile
+    _MenuItemConfig(
+      label: 'HDD River Crossing',
+      subtitle: 'Burhi Dihing steering & pullback load',
+      category: 'Field & Operations',
+      icon: Icons.swap_horiz_rounded,
+      color: Color(0xFFFFB95F),
+      screen: HddCrossingProfileScreen(),
+      badge: '1450m HDD',
+    ),
+    // Pre-Commissioning Walkdown & Punch List Management
+    _MenuItemConfig(
+      label: 'Commissioning Punch List',
+      subtitle: 'Walkdown, Cat A/B/C & N2 purge holds',
+      category: 'Field & Operations',
+      icon: Icons.checklist_rtl_rounded,
+      color: Color(0xFF38BDF8),
+      screen: CommissioningPunchlistScreen(),
+      badge: 'Cat A Hold',
     ),
     // Weather & Environmental Intelligence
     _MenuItemConfig(
@@ -225,6 +261,16 @@ class _MoreScreenState extends State<MoreScreen> {
       screen: SafetyManagementScreen(),
       badge: 'Zero LTI',
     ),
+    // Scaffolding & Heavy Rigging Safety Inspection
+    _MenuItemConfig(
+      label: 'Scaffolding & Rigging',
+      subtitle: 'IS 3696 tags, SWL & 7-day re-inspection',
+      category: 'Field & Operations',
+      icon: Icons.construction_rounded,
+      color: Color(0xFF0284C7),
+      screen: ScaffoldingInspectionScreen(),
+      badge: 'IS 3696',
+    ),
     // Materials Management
     _MenuItemConfig(
       label: 'Materials',
@@ -263,6 +309,26 @@ class _MoreScreenState extends State<MoreScreen> {
       color: Color(0xFF4EDEA3),
       screen: PipelineNdtScreen(),
       badge: '18" X70',
+    ),
+    // Golden Weld & Tie-In Certification (OISD-141 / ASME B31.8)
+    _MenuItemConfig(
+      label: 'Golden Weld Certification',
+      subtitle: 'OISD-141 Tie-in, 100% NDE & Exemption',
+      category: 'Field & Operations',
+      icon: Icons.verified_rounded,
+      color: Color(0xFFFFB95F),
+      screen: GoldenWeldCertificationScreen(),
+      badge: 'OISD-141',
+    ),
+    // Cathodic Protection & Pipeline Corrosion Integrity
+    _MenuItemConfig(
+      label: 'Cathodic Protection (CP)',
+      subtitle: 'NACE SP0169, 24 TLPs, ICCP & AC stray',
+      category: 'Field & Operations',
+      icon: Icons.shield_rounded,
+      color: Color(0xFF38BDF8),
+      screen: CathodicProtectionScreen(),
+      badge: 'NACE',
     ),
     // Contractual Conflicts
     _MenuItemConfig(
