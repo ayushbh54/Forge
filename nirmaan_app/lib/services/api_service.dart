@@ -9,6 +9,8 @@ class ApiService {
       : baseUrl = baseUrl ?? _defaultBaseUrl;
 
   static String get _defaultBaseUrl {
+    const customUrl = String.fromEnvironment('API_URL');
+    if (customUrl.isNotEmpty) return customUrl;
     // Android emulator uses 10.0.2.2 to reach host localhost
     try {
       if (Platform.isAndroid) return 'http://10.0.2.2:3000';

@@ -18,6 +18,10 @@ on:
         description: 'Release Tag (e.g. v1.0.0)'
         required: false
         default: 'v1.0.0-rc1'
+      backend_api_url:
+        description: 'Production Backend API URL (e.g. https://nirmaan-backend.onrender.com)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -68,12 +72,20 @@ jobs:
       - name: 8. Build Release Universal APK
         working-directory: ./nirmaan_app
         run: |
-          flutter build apk --release --no-tree-shake-icons
+          EXTRA_ARGS=""
+          if [ -n "${{ github.event.inputs.backend_api_url }}" ]; then
+            EXTRA_ARGS="--dart-define=API_URL=${{ github.event.inputs.backend_api_url }}"
+          fi
+          flutter build apk --release --no-tree-shake-icons $EXTRA_ARGS
 
       - name: 9. Build Split Architecture APKs (ARM64, ARMv7, x86_64)
         working-directory: ./nirmaan_app
         run: |
-          flutter build apk --split-per-abi --no-tree-shake-icons
+          EXTRA_ARGS=""
+          if [ -n "${{ github.event.inputs.backend_api_url }}" ]; then
+            EXTRA_ARGS="--dart-define=API_URL=${{ github.event.inputs.backend_api_url }}"
+          fi
+          flutter build apk --split-per-abi --no-tree-shake-icons $EXTRA_ARGS
 
       - name: 10. Copy and Rename APKs for Distribution
         run: |
