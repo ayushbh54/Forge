@@ -2228,8 +2228,9 @@ class RealDatabase {
   
       // 10. Equipment Fleet (24 Heavy Industrial Machines)
       this.seedDefaultEquipment('PRJ-OIL-2026');
-    }
-  }
+      return { success: true };
     });
+  }
+}
 
 export const realDb = new RealDatabase();
