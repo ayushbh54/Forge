@@ -58,6 +58,12 @@ import 'screens/operations/hot_tap_stopple_screen.dart';
 import 'screens/operations/meter_prover_screen.dart';
 import 'screens/operations/dewatering_drying_screen.dart';
 import 'screens/integrity/cips_dcvg_screen.dart';
+import 'screens/operations/hydrate_prediction_screen.dart';
+import 'screens/integrity/sacrificial_anode_screen.dart';
+import 'screens/safety/carbon_credits_screen.dart';
+import 'screens/engineering/thrust_block_design_screen.dart';
+import 'screens/operations/rtu_solar_microgrid_screen.dart';
+import 'screens/quality/api6d_valve_fat_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -135,6 +141,12 @@ class NirmaanApp extends StatelessWidget {
               '/operations/meter_prover': (context) => const MeterProverScreen(),
               '/operations/dewatering_drying': (context) => const DewateringDryingScreen(),
               '/integrity/cips_dcvg': (context) => const CipsDcvgScreen(),
+              '/operations/hydrate_prediction': (context) => const HydratePredictionScreen(),
+              '/integrity/sacrificial_anode': (context) => const SacrificialAnodeScreen(),
+              '/safety/carbon_credits': (context) => const CarbonCreditsScreen(),
+              '/engineering/thrust_block_design': (context) => const ThrustBlockDesignScreen(),
+              '/operations/rtu_solar_microgrid': (context) => const RtuSolarMicrogridScreen(),
+              '/quality/api6d_valve_fat': (context) => const Api6dValveFatScreen(),
             },
           );
         },

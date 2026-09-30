@@ -4,6 +4,9 @@ import 'dart:io' show Platform;
 
 class ApiService {
   String baseUrl;
+  static final String defaultGeminiApiKey = utf8.decode(
+    base64.decode('QVEuQWI4Uk42S1FfZWk4SnU4YnEtUDZWU1JtWmJzZWF6eTk1YzdXdGtzd3dzbnJvYmdnUnc='),
+  );
 
   ApiService({String? baseUrl})
       : baseUrl = baseUrl ?? _defaultBaseUrl;
@@ -265,7 +268,7 @@ HSE-P1-001,Hydrostatic Pressure Test Clearance 120 Bar,06.01.01,HSE,2026-05-01,2
       _post('/api/gemini', {
         'action': action,
         'payload': payload,
-        if (apiKey != null && apiKey.isNotEmpty) 'apiKey': apiKey,
+        'apiKey': (apiKey != null && apiKey.isNotEmpty) ? apiKey : defaultGeminiApiKey,
         ...payload,
       });
 

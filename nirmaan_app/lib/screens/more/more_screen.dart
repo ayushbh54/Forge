@@ -69,6 +69,12 @@ import '../operations/hot_tap_stopple_screen.dart';
 import '../operations/meter_prover_screen.dart';
 import '../operations/dewatering_drying_screen.dart';
 import '../integrity/cips_dcvg_screen.dart';
+import '../operations/hydrate_prediction_screen.dart';
+import '../integrity/sacrificial_anode_screen.dart';
+import '../safety/carbon_credits_screen.dart';
+import '../engineering/thrust_block_design_screen.dart';
+import '../operations/rtu_solar_microgrid_screen.dart';
+import '../quality/api6d_valve_fat_screen.dart';
 
 class _MenuItemConfig {
   final String label;
@@ -211,6 +217,66 @@ class _MoreScreenState extends State<MoreScreen> {
       color: Color(0xFF0284C7),
       screen: DewateringDryingScreen(),
       badge: 'ASME B31.8',
+    ),
+    // Natural Gas Hydrate Formation & Methanol Dosing Prediction (GPSA / Sloan / Hammerschmidt)
+    _MenuItemConfig(
+      label: 'Hydrate & Methanol Dosing',
+      subtitle: 'GPSA / Hammerschmidt THI, subcooling & river cold spot heatmap',
+      category: 'Field & Operations',
+      icon: Icons.ac_unit_rounded,
+      color: Color(0xFF38BDF8),
+      screen: HydratePredictionScreen(),
+      badge: 'GPSA / THI',
+    ),
+    // Sacrificial Anode (Zinc/Magnesium Ribbon) Cathodic Protection
+    _MenuItemConfig(
+      label: 'Sacrificial Anode CP',
+      subtitle: 'NACE SP0169 / DNV Mg/Zn ribbon & AC mitigation grounding',
+      category: 'Field & Operations',
+      icon: Icons.shield_rounded,
+      color: Color(0xFF4EDEA3),
+      screen: SacrificialAnodeScreen(),
+      badge: 'NACE SP0169',
+    ),
+    // RTU Solar Microgrid Telemetry
+    _MenuItemConfig(
+      label: 'RTU Solar Microgrid',
+      subtitle: 'IEEE 1547 / IEC 61427 24V/48V microgrid, MPPT & 72h battery',
+      category: 'Field & Operations',
+      icon: Icons.solar_power_rounded,
+      color: Color(0xFFFFB95F),
+      screen: RtuSolarMicrogridScreen(),
+      badge: 'IEEE 1547',
+    ),
+    // API 6D Valve Factory Acceptance Testing (FAT)
+    _MenuItemConfig(
+      label: 'API 6D Valve FAT',
+      subtitle: 'ISO 14313 24" Class 600 TMBV shell, seat & DBB bubble test',
+      category: 'Field & Operations',
+      icon: Icons.verified_rounded,
+      color: Color(0xFF38BDF8),
+      screen: Api6dValveFatScreen(),
+      badge: 'API 6D',
+    ),
+    // Pipeline Thrust Block & Anchor Design
+    _MenuItemConfig(
+      label: 'Thrust Block Design',
+      subtitle: 'ASME B31.8 / AWWA M11 hydrostatic bend forces & RCC anchor',
+      category: 'Field & Operations',
+      icon: Icons.foundation_rounded,
+      color: Color(0xFF94A3B8),
+      screen: ThrustBlockDesignScreen(),
+      badge: 'ASME B31.8',
+    ),
+    // Carbon Credits & Gas Flaring Accounting
+    _MenuItemConfig(
+      label: 'Carbon Credits & Flaring',
+      subtitle: 'Paris Article 6 / BEE CCTS GHG protocol, blowdown tCO2e',
+      category: 'Governance',
+      icon: Icons.eco_rounded,
+      color: Color(0xFF4EDEA3),
+      screen: CarbonCreditsScreen(),
+      badge: 'BEE CCTS',
     ),
     // Digital Twin 3D / Isometric GIS Site Map
     _MenuItemConfig(
