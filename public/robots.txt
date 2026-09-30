@@ -1,0 +1,3 @@
+# Nirmaan OS API
+User-agent: *
+Disallow: /api/
