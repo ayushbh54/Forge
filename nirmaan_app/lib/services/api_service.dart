@@ -14,11 +14,7 @@ class ApiService {
   static String get _defaultBaseUrl {
     const customUrl = String.fromEnvironment('API_URL');
     if (customUrl.isNotEmpty) return customUrl;
-    // Android emulator uses 10.0.2.2 to reach host localhost
-    try {
-      if (Platform.isAndroid) return 'http://10.0.2.2:3000';
-    } catch (_) {}
-    return 'http://localhost:3000';
+    return 'https://forge-qo18.onrender.com';
   }
 
   void updateBaseUrl(String newUrl) {
