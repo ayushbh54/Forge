@@ -40,11 +40,13 @@ import '../quality/pipeline_ndt_screen.dart';
 import '../quality/golden_weld_certification_screen.dart';
 import '../quality/hydrotesting_screen.dart';
 import '../quality/welder_qualification_screen.dart';
+import '../quality/aut_phased_array_screen.dart';
 import '../engineering/soil_strata_log_screen.dart';
 import '../engineering/hdd_crossing_profile_screen.dart';
 import '../engineering/hdd_crossing_screen.dart';
 import '../engineering/geohazard_monitoring_screen.dart';
 import '../engineering/rou_land_acquisition_screen.dart';
+import '../engineering/strain_gauge_monitoring_screen.dart';
 import '../operations/commissioning_punchlist_screen.dart';
 import '../operations/custody_metering_screen.dart';
 import '../operations/compressor_station_screen.dart';
@@ -63,6 +65,10 @@ import '../finance/gas_sales_settlement_screen.dart';
 import '../finance/measurement_book_screen.dart';
 import '../operations/chemical_injection_screen.dart';
 import '../operations/telecom_ofc_screen.dart';
+import '../operations/hot_tap_stopple_screen.dart';
+import '../operations/meter_prover_screen.dart';
+import '../operations/dewatering_drying_screen.dart';
+import '../integrity/cips_dcvg_screen.dart';
 
 class _MenuItemConfig {
   final String label;
@@ -176,6 +182,36 @@ class _MoreScreenState extends State<MoreScreen> {
       screen: TelecomOfcScreen(),
       badge: 'STM-4 / OTDR',
     ),
+    // Pressurized Hot Tapping & Line Plugging (Stopple)
+    _MenuItemConfig(
+      label: 'Hot Tapping & Stopple',
+      subtitle: 'ASME B31.8 / API RP 2201 pressurized tap, Battelle & LOR plug',
+      category: 'Field & Operations',
+      icon: Icons.precision_manufacturing_rounded,
+      color: Color(0xFFFFB95F),
+      screen: HotTapStoppleScreen(),
+      badge: 'API 2201',
+    ),
+    // Gas Meter Prover & Skid Calibration Laboratory
+    _MenuItemConfig(
+      label: 'Meter Prover & Calibration',
+      subtitle: 'AGA-7 / API MPMS 4 custody transfer & double chronometry',
+      category: 'Field & Operations',
+      icon: Icons.sync_alt_rounded,
+      color: Color(0xFF0284C7),
+      screen: MeterProverScreen(),
+      badge: 'AGA-7 / API 4',
+    ),
+    // Pipeline De-watering, Swabbing & Air/Nitrogen Drying (ASME B31.8 / OISD-141)
+    _MenuItemConfig(
+      label: 'De-watering & Drying',
+      subtitle: 'ASME B31.8 / OISD-141 disc pigs, swabbing & -40°C ADP soak',
+      category: 'Field & Operations',
+      icon: Icons.water_drop_rounded,
+      color: Color(0xFF0284C7),
+      screen: DewateringDryingScreen(),
+      badge: 'ASME B31.8',
+    ),
     // Digital Twin 3D / Isometric GIS Site Map
     _MenuItemConfig(
       label: 'Digital Twin 3D',
@@ -235,6 +271,16 @@ class _MoreScreenState extends State<MoreScreen> {
       color: Color(0xFF38BDF8),
       screen: RouLandAcquisitionScreen(),
       badge: 'P&MP ACT',
+    ),
+    // Pipeline Strain Gauge & Riverbank Bending Stress (ASME B31.8 / PRCI)
+    _MenuItemConfig(
+      label: 'Pipeline Strain Gauges',
+      subtitle: 'ASME B31.8 / PRCI 3-axis rosettes & riverbank bending stress',
+      category: 'Field & Operations',
+      icon: Icons.stacked_line_chart_rounded,
+      color: Color(0xFF38BDF8),
+      screen: StrainGaugeMonitoringScreen(),
+      badge: 'ASME B31.8',
     ),
     // Pre-Commissioning Walkdown & Punch List Management
     _MenuItemConfig(
@@ -545,6 +591,16 @@ class _MoreScreenState extends State<MoreScreen> {
       screen: WelderQualificationScreen(),
       badge: 'API 1104',
     ),
+    // Automated Ultrasonic Testing (AUT) Phased Array & TOFD (ASTM E1961 / API 1104 Annex A)
+    _MenuItemConfig(
+      label: 'AUT Phased Array & TOFD',
+      subtitle: 'ASTM E1961 Zonal Discrimination, S-scan & TOFD ±0.3mm',
+      category: 'Field & Operations',
+      icon: Icons.radar_rounded,
+      color: Color(0xFF0284C7),
+      screen: AutPhasedArrayScreen(),
+      badge: 'ASTM E1961',
+    ),
     // Pipeline Hydrostatic Testing & Dewatering (ASME B31.8 / OISD-141)
     _MenuItemConfig(
       label: 'Pipeline Hydrotesting',
@@ -584,6 +640,16 @@ class _MoreScreenState extends State<MoreScreen> {
       color: Color(0xFF4EDEA3),
       screen: SoilResistivityScreen(),
       badge: 'ASTM G57',
+    ),
+    // Cathodic Protection Close Interval Potential Survey (CIPS) & DCVG
+    _MenuItemConfig(
+      label: 'CIPS & DCVG Survey',
+      subtitle: 'NACE TM0497 / SP0207, GPS 0.8s/0.2s, %IR defect & -850mV',
+      category: 'Field & Operations',
+      icon: Icons.stacked_line_chart_rounded,
+      color: Color(0xFF38BDF8),
+      screen: CipsDcvgScreen(),
+      badge: 'NACE ECDA',
     ),
     // Intelligent Pipeline Pigging & ILI In-Line Inspection
     _MenuItemConfig(
