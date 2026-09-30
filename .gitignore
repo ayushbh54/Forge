@@ -56,4 +56,5 @@ Thumbs.db
 .dart-tool/
 .dartServer/
 *.tsbuildinfo
+*.apk
 
