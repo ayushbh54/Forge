@@ -795,7 +795,7 @@ class RtuSolarMicrogridRepository {
         satelliteTransceiverModel: 'Hughes 9502 BGAN Satellite Modem (L-Band)',
         satRssiDbm: -74.0,
         satPowerWatts: 22.0,
-        valveTag: valveTag,
+        valveActuatorTag: valveTag,
         actuatorType: actuatorType,
         actuatorPositionPercent: 100.0,
         actuatorStandbyWatts: 35.0,
@@ -853,19 +853,6 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
   bool _isPstInProgress = false;
   double _pstProgress = 0.0;
   Timer? _pstTimer;
-
-  @override
-  void initState({super.key});
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(covariant RtuSolarMicrogridScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-  }
 
   // Proper initState override
   @override
