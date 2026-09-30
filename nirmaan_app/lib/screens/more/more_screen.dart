@@ -16,6 +16,9 @@ import '../documents/pdf_intelligence_screen.dart';
 import '../equipment/equipment_tracking_screen.dart';
 import '../hse/safety_management_screen.dart';
 import '../safety/scaffolding_inspection_screen.dart';
+import '../safety/ptw_live_screen.dart';
+import '../safety/erdmp_screen.dart';
+import '../safety/flare_radiation_screen.dart';
 import '../linking/linking_bridge_screen.dart';
 import '../materials/materials_screen.dart';
 import '../materials/qr_material_scanner_screen.dart';
@@ -33,11 +36,22 @@ import '../workforce/supervisor_visit_screen.dart';
 import '../map/digital_twin_site_map_screen.dart';
 import '../quality/pipeline_ndt_screen.dart';
 import '../quality/golden_weld_certification_screen.dart';
+import '../quality/hydrotesting_screen.dart';
 import '../engineering/soil_strata_log_screen.dart';
 import '../engineering/hdd_crossing_profile_screen.dart';
+import '../engineering/geohazard_monitoring_screen.dart';
 import '../operations/commissioning_punchlist_screen.dart';
+import '../operations/custody_metering_screen.dart';
+import '../operations/compressor_station_screen.dart';
+import '../operations/gas_in_commissioning_screen.dart';
 import '../operations/scada_telemetry_screen.dart';
+import '../operations/scada_cybersecurity_screen.dart';
 import '../integrity/cathodic_protection_screen.dart';
+import '../integrity/soil_resistivity_screen.dart';
+import '../operations/gas_chromatography_screen.dart';
+import '../integrity/pipeline_pigging_screen.dart';
+import '../integrity/pims_risk_screen.dart';
+import '../operations/drone_row_surveillance_screen.dart';
 
 class _MenuItemConfig {
   final String label;
@@ -81,6 +95,56 @@ class _MoreScreenState extends State<MoreScreen> {
       screen: ScadaTelemetryScreen(),
       badge: 'SCADA LIVE',
     ),
+    // SCADA RTU & Industrial Cyber-Security (IEC 62443 / CERT-In)
+    _MenuItemConfig(
+      label: 'SCADA Cyber-Security',
+      subtitle: 'IEC 62443, DPI 0x05 blocking & MitM defense',
+      category: 'Field & Operations',
+      icon: Icons.shield_rounded,
+      color: Color(0xFF00E5FF),
+      screen: ScadaCybersecurityScreen(),
+      badge: 'IEC 62443',
+    ),
+    // Pipeline Right-of-Way (RoW) Encroachment & Drone Surveillance
+    _MenuItemConfig(
+      label: 'RoW Drone Surveillance',
+      subtitle: 'Corridor encroachment, thermal IR theft & QRT patrol',
+      category: 'Field & Operations',
+      icon: Icons.flight_takeoff_rounded,
+      color: Color(0xFF38BDF8),
+      screen: DroneRowSurveillanceScreen(),
+      badge: '194.5 KM',
+    ),
+    // Custody Transfer Ultrasonic Flow Metering & Prover Skid
+    _MenuItemConfig(
+      label: 'Custody Metering Skid',
+      subtitle: 'AGA-9 Ultrasonic & API Bi-Directional Prover',
+      category: 'Field & Operations',
+      icon: Icons.speed_rounded,
+      color: Color(0xFF0284C7),
+      screen: CustodyMeteringScreen(),
+      badge: 'AGA-9 / API',
+    ),
+    // Compressor Station Telemetry & Anti-Surge Control
+    _MenuItemConfig(
+      label: 'Compressor Stations',
+      subtitle: 'Centrifugal trains, anti-surge & vibration telemetry',
+      category: 'Field & Operations',
+      icon: Icons.compress_rounded,
+      color: Color(0xFF38BDF8),
+      screen: CompressorStationScreen(),
+      badge: 'ISO-10816',
+    ),
+    // Gas Chromatography & Natural Gas Quality Billing
+    _MenuItemConfig(
+      label: 'Gas Chromatography & Billing',
+      subtitle: 'ISO 6974 / GPA 2261, GCV/NCV & MMBTU tariff',
+      category: 'Field & Operations',
+      icon: Icons.biotech_rounded,
+      color: Color(0xFF38BDF8),
+      screen: GasChromatographyScreen(),
+      badge: 'ISO 6974',
+    ),
     // Digital Twin 3D / Isometric GIS Site Map
     _MenuItemConfig(
       label: 'Digital Twin 3D',
@@ -111,6 +175,16 @@ class _MoreScreenState extends State<MoreScreen> {
       screen: HddCrossingProfileScreen(),
       badge: '1450m HDD',
     ),
+    // Slope Stability & Geohazard Early Warning System
+    _MenuItemConfig(
+      label: 'Geohazard Monitoring',
+      subtitle: 'Inclinometers, bathymetric scour & seismic PGA',
+      category: 'Field & Operations',
+      icon: Icons.landslide_rounded,
+      color: Color(0xFFF59E0B),
+      screen: GeohazardMonitoringScreen(),
+      badge: 'EARLY WARN',
+    ),
     // Pre-Commissioning Walkdown & Punch List Management
     _MenuItemConfig(
       label: 'Commissioning Punch List',
@@ -120,6 +194,16 @@ class _MoreScreenState extends State<MoreScreen> {
       color: Color(0xFF38BDF8),
       screen: CommissioningPunchlistScreen(),
       badge: 'Cat A Hold',
+    ),
+    // Gas-In & Hydrocarbon Commissioning
+    _MenuItemConfig(
+      label: 'Gas-In Commissioning',
+      subtitle: 'N2 purge, flare telemetry & gas-in holds',
+      category: 'Field & Operations',
+      icon: Icons.local_fire_department_rounded,
+      color: Color(0xFFFFB95F),
+      screen: GasInCommissioningScreen(),
+      badge: 'OISD-141',
     ),
     // Weather & Environmental Intelligence
     _MenuItemConfig(
@@ -271,6 +355,36 @@ class _MoreScreenState extends State<MoreScreen> {
       screen: ScaffoldingInspectionScreen(),
       badge: 'IS 3696',
     ),
+    // Permit to Work (PTW) Live Management
+    _MenuItemConfig(
+      label: 'Permit to Work (PTW)',
+      subtitle: 'OISD-105 live permits, gas tests & LOTO',
+      category: 'Field & Operations',
+      icon: Icons.assignment_turned_in_rounded,
+      color: Color(0xFF10B981),
+      screen: PtwLiveScreen(),
+      badge: 'OISD-105',
+    ),
+    // Emergency Response & Disaster Management Plan (PNGRB ERDMP / OISD-GDN-166)
+    _MenuItemConfig(
+      label: 'Disaster Plan (ERDMP)',
+      subtitle: 'PNGRB 3-Tier, ALOHA Plume & Call Tree',
+      category: 'Field & Operations',
+      icon: Icons.crisis_alert_rounded,
+      color: Color(0xFFEF4444),
+      screen: ErdmpScreen(),
+      badge: 'ERDMP',
+    ),
+    // Flare Stack & Thermal Radiation Monitoring (API 521 / OISD-106)
+    _MenuItemConfig(
+      label: 'Flare & Radiation Contours',
+      subtitle: 'API 521 thermal zones, pilot array & KO drum',
+      category: 'Field & Operations',
+      icon: Icons.local_fire_department_rounded,
+      color: Color(0xFFEF4444),
+      screen: FlareRadiationScreen(),
+      badge: 'API 521',
+    ),
     // Materials Management
     _MenuItemConfig(
       label: 'Materials',
@@ -320,6 +434,16 @@ class _MoreScreenState extends State<MoreScreen> {
       screen: GoldenWeldCertificationScreen(),
       badge: 'OISD-141',
     ),
+    // Pipeline Hydrostatic Testing & Dewatering (ASME B31.8 / OISD-141)
+    _MenuItemConfig(
+      label: 'Pipeline Hydrotesting',
+      subtitle: 'ASME B31.8 112.5 Bar test, P/V plot & dew point',
+      category: 'Field & Operations',
+      icon: Icons.water_drop_rounded,
+      color: Color(0xFF0284C7),
+      screen: HydrotestingScreen(),
+      badge: '112.5 BAR',
+    ),
     // Cathodic Protection & Pipeline Corrosion Integrity
     _MenuItemConfig(
       label: 'Cathodic Protection (CP)',
@@ -329,6 +453,36 @@ class _MoreScreenState extends State<MoreScreen> {
       color: Color(0xFF38BDF8),
       screen: CathodicProtectionScreen(),
       badge: 'NACE',
+    ),
+    // Cathodic Protection Anode Bed Replenishment & Soil Resistivity
+    _MenuItemConfig(
+      label: 'Soil Resistivity & Anode Bed',
+      subtitle: 'ASTM G57 Wenner 4-pin & DWICG groundbed telemetry',
+      category: 'Field & Operations',
+      icon: Icons.layers_rounded,
+      color: Color(0xFF4EDEA3),
+      screen: SoilResistivityScreen(),
+      badge: 'ASTM G57',
+    ),
+    // Intelligent Pipeline Pigging & ILI In-Line Inspection
+    _MenuItemConfig(
+      label: 'Pipeline Pigging & ILI',
+      subtitle: 'MFL/UT anomaly tracking & ASME B31G',
+      category: 'Field & Operations',
+      icon: Icons.precision_manufacturing_rounded,
+      color: Color(0xFF4EDEA3),
+      screen: PipelinePiggingScreen(),
+      badge: 'ASME B31G',
+    ),
+    // Pipeline Integrity Management System (PIMS) Risk & Remnant Life
+    _MenuItemConfig(
+      label: 'PIMS Risk & Remnant Life',
+      subtitle: 'ASME B31.8S / API 1160 QRA, 5x5 Matrix & Dig Schedule',
+      category: 'Field & Operations',
+      icon: Icons.security_rounded,
+      color: Color(0xFF0284C7),
+      screen: PimsRiskScreen(),
+      badge: 'B31.8S QRA',
     ),
     // Contractual Conflicts
     _MenuItemConfig(
