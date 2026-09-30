@@ -23,8 +23,11 @@ import 'screens/map/digital_twin_site_map_screen.dart';
 import 'screens/quality/concrete_pour_qa_screen.dart';
 import 'screens/quality/golden_weld_certification_screen.dart';
 import 'screens/quality/hydrotesting_screen.dart';
+import 'screens/quality/welder_qualification_screen.dart';
 import 'screens/engineering/hdd_crossing_profile_screen.dart';
+import 'screens/engineering/hdd_crossing_screen.dart';
 import 'screens/engineering/geohazard_monitoring_screen.dart';
+import 'screens/engineering/rou_land_acquisition_screen.dart';
 import 'screens/operations/scada_telemetry_screen.dart';
 import 'screens/integrity/cathodic_protection_screen.dart';
 import 'screens/operations/commissioning_punchlist_screen.dart';
@@ -34,6 +37,8 @@ import 'screens/safety/scaffolding_inspection_screen.dart';
 import 'screens/safety/ptw_live_screen.dart';
 import 'screens/safety/flare_radiation_screen.dart';
 import 'screens/safety/erdmp_screen.dart';
+import 'screens/safety/environmental_compliance_screen.dart';
+import 'screens/safety/incident_rca_screen.dart';
 import 'screens/integrity/pipeline_pigging_screen.dart';
 import 'screens/integrity/soil_resistivity_screen.dart';
 import 'screens/operations/gas_chromatography_screen.dart';
@@ -41,6 +46,12 @@ import 'screens/operations/gas_in_commissioning_screen.dart';
 import 'screens/operations/scada_cybersecurity_screen.dart';
 import 'screens/operations/drone_row_surveillance_screen.dart';
 import 'screens/integrity/pims_risk_screen.dart';
+import 'screens/finance/gas_sales_settlement_screen.dart';
+import 'screens/finance/measurement_book_screen.dart';
+import 'screens/operations/chemical_injection_screen.dart';
+import 'screens/procurement/pipe_heat_tally_screen.dart';
+import 'screens/integrity/field_joint_coating_screen.dart';
+import 'screens/operations/telecom_ofc_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,8 +94,11 @@ class NirmaanApp extends StatelessWidget {
               '/quality/concrete_pour': (context) => const ConcretePourQaScreen(),
               '/quality/golden_weld': (context) => const GoldenWeldCertificationScreen(),
               '/quality/hydrotesting': (context) => const HydrotestingScreen(),
+              '/quality/welder_qualification': (context) => const WelderQualificationScreen(),
               '/engineering/hdd_crossing_profile': (context) => const HddCrossingProfileScreen(),
+              '/engineering/hdd_crossing': (context) => const HddCrossingScreen(),
               '/engineering/geohazard_monitoring': (context) => const GeohazardMonitoringScreen(),
+              '/engineering/rou_land_acquisition': (context) => const RouLandAcquisitionScreen(),
               '/operations/scada_telemetry': (context) => const ScadaTelemetryScreen(),
               '/integrity/cathodic_protection': (context) => const CathodicProtectionScreen(),
               '/operations/commissioning_punchlist': (context) => const CommissioningPunchlistScreen(),
@@ -92,6 +106,8 @@ class NirmaanApp extends StatelessWidget {
               '/safety/ptw_live': (context) => const PtwLiveScreen(),
               '/safety/flare_radiation': (context) => const FlareRadiationScreen(),
               '/safety/erdmp': (context) => const ErdmpScreen(),
+              '/safety/environmental_compliance': (context) => const EnvironmentalComplianceScreen(),
+              '/safety/incident_rca': (context) => const IncidentRcaScreen(),
               '/integrity/pipeline_pigging': (context) => const PipelinePiggingScreen(),
               '/integrity/soil_resistivity': (context) => const SoilResistivityScreen(),
               '/operations/custody_metering': (context) => const CustodyMeteringScreen(),
@@ -101,6 +117,12 @@ class NirmaanApp extends StatelessWidget {
               '/operations/scada_cybersecurity': (context) => const ScadaCybersecurityScreen(),
               '/operations/drone_row_surveillance': (context) => const DroneRowSurveillanceScreen(),
               '/integrity/pims_risk': (context) => const PimsRiskScreen(),
+              '/finance/gas_sales_settlement': (context) => const GasSalesSettlementScreen(),
+              '/finance/measurement_book': (context) => const MeasurementBookScreen(),
+              '/procurement/pipe_heat_tally': (context) => const PipeHeatTallyScreen(),
+              '/integrity/field_joint_coating': (context) => const FieldJointCoatingScreen(),
+              '/operations/chemical_injection': (context) => const ChemicalInjectionScreen(),
+              '/operations/telecom_ofc': (context) => const TelecomOfcScreen(),
             },
           );
         },

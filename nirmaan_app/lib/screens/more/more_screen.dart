@@ -19,6 +19,8 @@ import '../safety/scaffolding_inspection_screen.dart';
 import '../safety/ptw_live_screen.dart';
 import '../safety/erdmp_screen.dart';
 import '../safety/flare_radiation_screen.dart';
+import '../safety/environmental_compliance_screen.dart';
+import '../safety/incident_rca_screen.dart';
 import '../linking/linking_bridge_screen.dart';
 import '../materials/materials_screen.dart';
 import '../materials/qr_material_scanner_screen.dart';
@@ -37,9 +39,12 @@ import '../map/digital_twin_site_map_screen.dart';
 import '../quality/pipeline_ndt_screen.dart';
 import '../quality/golden_weld_certification_screen.dart';
 import '../quality/hydrotesting_screen.dart';
+import '../quality/welder_qualification_screen.dart';
 import '../engineering/soil_strata_log_screen.dart';
 import '../engineering/hdd_crossing_profile_screen.dart';
+import '../engineering/hdd_crossing_screen.dart';
 import '../engineering/geohazard_monitoring_screen.dart';
+import '../engineering/rou_land_acquisition_screen.dart';
 import '../operations/commissioning_punchlist_screen.dart';
 import '../operations/custody_metering_screen.dart';
 import '../operations/compressor_station_screen.dart';
@@ -51,7 +56,13 @@ import '../integrity/soil_resistivity_screen.dart';
 import '../operations/gas_chromatography_screen.dart';
 import '../integrity/pipeline_pigging_screen.dart';
 import '../integrity/pims_risk_screen.dart';
+import '../integrity/field_joint_coating_screen.dart';
 import '../operations/drone_row_surveillance_screen.dart';
+import '../procurement/pipe_heat_tally_screen.dart';
+import '../finance/gas_sales_settlement_screen.dart';
+import '../finance/measurement_book_screen.dart';
+import '../operations/chemical_injection_screen.dart';
+import '../operations/telecom_ofc_screen.dart';
 
 class _MenuItemConfig {
   final String label;
@@ -145,6 +156,26 @@ class _MoreScreenState extends State<MoreScreen> {
       screen: GasChromatographyScreen(),
       badge: 'ISO 6974',
     ),
+    // Chemical Injection & Corrosion Inhibitor Dosing Skid
+    _MenuItemConfig(
+      label: 'Chemical Injection Skid',
+      subtitle: 'NACE MR0175 / OISD-141 dosing & ER probe monitoring',
+      category: 'Field & Operations',
+      icon: Icons.science_rounded,
+      color: Color(0xFF0284C7),
+      screen: ChemicalInjectionScreen(),
+      badge: 'NACE / OISD',
+    ),
+    // Pipeline Optical Fiber Backbone & SDH STM-4 Telecom
+    _MenuItemConfig(
+      label: 'Telecom & OFC Backbone',
+      subtitle: '24-Core OFC, OTDR telemetry, SDH STM-4 & Repeater Solar/DG',
+      category: 'Field & Operations',
+      icon: Icons.settings_ethernet_rounded,
+      color: Color(0xFF38BDF8),
+      screen: TelecomOfcScreen(),
+      badge: 'STM-4 / OTDR',
+    ),
     // Digital Twin 3D / Isometric GIS Site Map
     _MenuItemConfig(
       label: 'Digital Twin 3D',
@@ -175,6 +206,16 @@ class _MoreScreenState extends State<MoreScreen> {
       screen: HddCrossingProfileScreen(),
       badge: '1450m HDD',
     ),
+    // HDD River & Highway Crossing Engineering (ASME B31.8 / API RP 1111)
+    _MenuItemConfig(
+      label: 'HDD Crossing Engineering',
+      subtitle: 'ASME B31.8 / API RP 1111 trenchless telemetry',
+      category: 'Field & Operations',
+      icon: Icons.alt_route_rounded,
+      color: Color(0xFF0284C7),
+      screen: HddCrossingScreen(),
+      badge: 'API RP 1111',
+    ),
     // Slope Stability & Geohazard Early Warning System
     _MenuItemConfig(
       label: 'Geohazard Monitoring',
@@ -184,6 +225,16 @@ class _MoreScreenState extends State<MoreScreen> {
       color: Color(0xFFF59E0B),
       screen: GeohazardMonitoringScreen(),
       badge: 'EARLY WARN',
+    ),
+    // Cadastral Land Acquisition (RoU) under P&MP Act, 1962 & LiDAR Alignment
+    _MenuItemConfig(
+      label: 'Land Acquisition (RoU)',
+      subtitle: 'P&MP Act 1962, Cadastral Dags & Crop Compensation',
+      category: 'Field & Operations',
+      icon: Icons.map_rounded,
+      color: Color(0xFF38BDF8),
+      screen: RouLandAcquisitionScreen(),
+      badge: 'P&MP ACT',
     ),
     // Pre-Commissioning Walkdown & Punch List Management
     _MenuItemConfig(
@@ -315,6 +366,26 @@ class _MoreScreenState extends State<MoreScreen> {
       screen: DisputeAdjudicationScreen(),
       badge: 'Cl. 20',
     ),
+    // Gas Sales Agreement (GSA) & Custody Settlement
+    _MenuItemConfig(
+      label: 'GSA & Custody Settlement',
+      subtitle: 'PNGRB tariff, ToP 90% & imbalance cash-out',
+      category: 'Governance',
+      icon: Icons.request_quote_rounded,
+      color: Color(0xFFFFB95F),
+      screen: GasSalesSettlementScreen(),
+      badge: 'PNGRB/ToP',
+    ),
+    // Contractor Progress Billing & Tripartite e-MB Ledger (CPWD Form 23/26)
+    _MenuItemConfig(
+      label: 'e-MB & Progress Billing',
+      subtitle: 'CPWD Form 23/26, tripartite sign & RA bill',
+      category: 'Governance',
+      icon: Icons.receipt_long_rounded,
+      color: Color(0xFF38BDF8),
+      screen: MeasurementBookScreen(),
+      badge: 'CPWD / OIL',
+    ),
     // FIDIC Site Diary
     _MenuItemConfig(
       label: 'FIDIC Site Diary',
@@ -385,6 +456,26 @@ class _MoreScreenState extends State<MoreScreen> {
       screen: FlareRadiationScreen(),
       badge: 'API 521',
     ),
+    // Statutory Environmental Clearance & MoEFCC Compliance (FCA 1980 / PCBA)
+    _MenuItemConfig(
+      label: 'MoEFCC Enviro Compliance',
+      subtitle: 'EC Cat-A, PCBA CTE/CTO, FCA 28.4ha & CAAQMS',
+      category: 'Field & Operations',
+      icon: Icons.eco_rounded,
+      color: Color(0xFF4EDEA3),
+      screen: EnvironmentalComplianceScreen(),
+      badge: 'MoEFCC/PCBA',
+    ),
+    // Statutory Incident Investigation & Root Cause Analysis (OISD-GDN-107 / DGMS)
+    _MenuItemConfig(
+      label: 'Incident Investigation & RCA',
+      subtitle: 'OISD-GDN-107 / DGMS 5-Whys, Ishikawa & CAPA',
+      category: 'Field & Operations',
+      icon: Icons.biotech_rounded,
+      color: Color(0xFFEF4444),
+      screen: IncidentRcaScreen(),
+      badge: 'OISD-107',
+    ),
     // Materials Management
     _MenuItemConfig(
       label: 'Materials',
@@ -414,6 +505,16 @@ class _MoreScreenState extends State<MoreScreen> {
       screen: WeighbridgeTicketScreen(),
       badge: '±1.5% TOL',
     ),
+    // API 5L PSL-2 Pipe Heat Tally & Material Traceability
+    _MenuItemConfig(
+      label: 'Pipe Heat Tally',
+      subtitle: 'API 5L PSL-2 MTC 3.2, chainage & pup piece tally',
+      category: 'Field & Operations',
+      icon: Icons.view_column_rounded,
+      color: Color(0xFF38BDF8),
+      screen: PipeHeatTallyScreen(),
+      badge: 'API 5L',
+    ),
     // Pipeline Weld NDT & Hydrostatic Testing
     _MenuItemConfig(
       label: 'Pipeline NDT & Hydrotest',
@@ -434,6 +535,16 @@ class _MoreScreenState extends State<MoreScreen> {
       screen: GoldenWeldCertificationScreen(),
       badge: 'OISD-141',
     ),
+    // Welder Performance Qualification & WPS Registry (API 1104 / ASME IX)
+    _MenuItemConfig(
+      label: 'Welder & WPS Registry',
+      subtitle: 'API 1104 / ASME IX WPQ roster, repair KPI & WPS',
+      category: 'Field & Operations',
+      icon: Icons.badge_rounded,
+      color: Color(0xFF0284C7),
+      screen: WelderQualificationScreen(),
+      badge: 'API 1104',
+    ),
     // Pipeline Hydrostatic Testing & Dewatering (ASME B31.8 / OISD-141)
     _MenuItemConfig(
       label: 'Pipeline Hydrotesting',
@@ -443,6 +554,16 @@ class _MoreScreenState extends State<MoreScreen> {
       color: Color(0xFF0284C7),
       screen: HydrotestingScreen(),
       badge: '112.5 BAR',
+    ),
+    // Field Joint Anticorrosion Coating (FJC) & Holiday Inspection
+    _MenuItemConfig(
+      label: 'Field Joint Coating (FJC)',
+      subtitle: 'NACE SP0188 / DIN 30670, Sa 2.5, HV Spark & Peel',
+      category: 'Field & Operations',
+      icon: Icons.layers_outlined,
+      color: Color(0xFFFFB95F),
+      screen: FieldJointCoatingScreen(),
+      badge: 'NACE SP0188',
     ),
     // Cathodic Protection & Pipeline Corrosion Integrity
     _MenuItemConfig(
