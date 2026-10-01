@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/taxonomy/archetype_controller.dart';
-import '../../core/taxonomy/project_archetype.dart';
 
 class FidicClaimEvent {
   final String id;

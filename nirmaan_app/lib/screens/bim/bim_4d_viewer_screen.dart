@@ -34,7 +34,6 @@ class Bim4dViewerScreen extends StatefulWidget {
 
 class _Bim4dViewerScreenState extends State<Bim4dViewerScreen> {
   double _timelineSlider = 0.75; // 75% project timeline
-  int _selectedFilter = 0;
   IfcElement? _selectedElement;
 
   final List<IfcElement> _elements = const [

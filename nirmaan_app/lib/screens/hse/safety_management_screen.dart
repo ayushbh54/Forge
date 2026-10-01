@@ -62,7 +62,7 @@ class _SafetyManagementScreenState extends State<SafetyManagementScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 6, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _initializeData();
     _startSafeManHoursTicker();
     _startGasSimulation();
@@ -2102,13 +2102,18 @@ class _SafetyManagementScreenState extends State<SafetyManagementScreen>
                   // KPI 1: Safe Man-Hours
                   Expanded(
                     flex: isWide ? 3 : 2,
-                    child: _buildKpiCard(
-                      icon: Icons.timer_outlined,
-                      iconColor: AppTheme.tertiary,
-                      label: 'Safe Man-Hours',
-                      value: '$_safeManHoursCount hrs',
-                      subtitle: 'Zero LTI Streak',
-                      accentColor: AppTheme.tertiary,
+                    child: InkWell(
+                      onTap: _showSafeManHoursMilestoneSheet,
+                      borderRadius: BorderRadius.circular(10),
+                      child: _buildKpiCard(
+                        icon: Icons.timer_outlined,
+                        iconColor: AppTheme.tertiary,
+                        label: 'Safe Man-Hours',
+                        value: '$_safeManHoursCount hrs',
+                        subtitle: 'Zero LTI Streak',
+                        accentColor: AppTheme.tertiary,
+                        isInteractive: true,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -2116,13 +2121,18 @@ class _SafetyManagementScreenState extends State<SafetyManagementScreen>
                   // KPI 2: LTIFR
                   Expanded(
                     flex: 2,
-                    child: _buildKpiCard(
-                      icon: Icons.speed_rounded,
-                      iconColor: AppTheme.primaryLight,
-                      label: 'LTIFR',
-                      value: _ltifr,
-                      subtitle: 'World-Class (<0.10)',
-                      accentColor: AppTheme.primaryLight,
+                    child: InkWell(
+                      onTap: _showLtifrBreakdownDialog,
+                      borderRadius: BorderRadius.circular(10),
+                      child: _buildKpiCard(
+                        icon: Icons.speed_rounded,
+                        iconColor: AppTheme.primaryLight,
+                        label: 'LTIFR',
+                        value: _ltifr,
+                        subtitle: 'World-Class (<0.10)',
+                        accentColor: AppTheme.primaryLight,
+                        isInteractive: true,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -2901,6 +2911,34 @@ class _SafetyManagementScreenState extends State<SafetyManagementScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  PopupMenuButton<String>(
+                    tooltip: 'Simulate Gas Release Drill',
+                    onSelected: _injectGasScenario,
+                    itemBuilder: (ctx) => [
+                      const PopupMenuItem(value: 'NORMAL', child: Text('Normal Baseline (0 ppm)')),
+                      const PopupMenuItem(value: 'H2S_LEAK', child: Text('⚠️ Inject H2S Leak (14.8 ppm)')),
+                      const PopupMenuItem(value: 'LEL_SURGE', child: Text('🔥 Inject LEL Flammable Surge')),
+                      const PopupMenuItem(value: 'O2_DEFICIENT', child: Text('💨 Inject O2 Deficiency (16.2%)')),
+                      const PopupMenuItem(value: 'BUMP_TEST', child: Text('✅ Run Bump Test Calibration')),
+                    ],
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceCard,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppTheme.border),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.science_rounded, size: 14, color: AppTheme.primaryLight),
+                          const SizedBox(width: 4),
+                          Text('Gas Drill: $_activeGasScenario', style: const TextStyle(fontSize: 11, color: AppTheme.primaryLight, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       foregroundColor: _isSirenActive ? Colors.redAccent : AppTheme.primaryLight,
@@ -4306,6 +4344,72 @@ class _SafetyManagementScreenState extends State<SafetyManagementScreen>
                       style: TextStyle(color: AppTheme.textMuted, fontSize: 10),
                     ),
                   ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Digital HSE Officer Sign-Off Card
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceCard,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: _goldenRulesSignOff != null ? AppTheme.tertiary.withValues(alpha: 0.5) : AppTheme.border,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: (_goldenRulesSignOff != null ? AppTheme.tertiary : AppTheme.primaryLight).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.verified_user_rounded,
+                  color: _goldenRulesSignOff != null ? AppTheme.tertiary : AppTheme.primaryLight,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _goldenRulesSignOff != null ? 'HSE OFFICER SIGN-OFF RATIFIED' : 'DAILY IOGP/OISD SIGN-OFF',
+                      style: TextStyle(
+                        color: _goldenRulesSignOff != null ? AppTheme.tertiary : AppTheme.primaryLight,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _goldenRulesSignOff != null
+                          ? '${_goldenRulesSignOff!.officerName} (${_goldenRulesSignOff!.badgeId})'
+                          : '10 Life-Saving Rules compliance sign-off pending',
+                      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 11.5, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryLight,
+                  foregroundColor: Colors.black87,
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  minimumSize: Size.zero,
+                ),
+                onPressed: _showGoldenRulesSignOffDialog,
+                child: Text(
+                  _goldenRulesSignOff != null ? 'Re-verify' : 'Sign Off',
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
                 ),
               ),
             ],

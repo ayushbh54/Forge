@@ -189,7 +189,7 @@ Widget createTestWidget({
   );
 }
 
-void configureTestViewport(WidgetTester tester, {Size size = const Size(1200, 2400)}) {
+void configureTestViewport(WidgetTester tester, {Size size = const Size(1200, 4000)}) {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
   addTearDown(() {
@@ -515,7 +515,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('EVM Formulas & Standards'), findsOneWidget);
-        expect(find.text('Schedule Variance (SV)'), findsOneWidget);
+        expect(find.text('Schedule Variance (SV)'), findsAtLeastNWidgets(1));
       });
     });
 

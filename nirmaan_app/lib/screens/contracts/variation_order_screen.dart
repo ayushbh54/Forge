@@ -23,7 +23,7 @@ class _VariationOrderScreenState extends State<VariationOrderScreen> {
   String _selectedFilter = 'ALL'; // ALL, SANCTIONED, REVIEWED, INITIATED, GEOLOGY, DESIGN_MOD
   String _sortBy = 'ID_ASC'; // ID_ASC, COST_DESC, EOT_DESC
 
-  final Set<String> _expandedCards = {'VO-2026-01', 'VO-2026-03'};
+  final Set<String> _expandedCards = <String>{};
 
   // Baseline variation orders (VO-2026-01 through VO-2026-06)
   late List<VariationOrderModel> _variationOrders;
@@ -812,28 +812,34 @@ class _VariationOrderScreenState extends State<VariationOrderScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primary.withAlpha(35),
-                      borderRadius: BorderRadius.circular(6),
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primary.withAlpha(35),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Icon(Icons.bar_chart_rounded, color: AppTheme.primaryLight, size: 18),
                     ),
-                    child: const Icon(Icons.bar_chart_rounded, color: AppTheme.primaryLight, size: 18),
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'VARIATION REGISTER OVERVIEW',
-                    style: TextStyle(
-                      color: AppTheme.textSecondary,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.8,
+                    const SizedBox(width: 8),
+                    const Flexible(
+                      child: Text(
+                        'VARIATION REGISTER OVERVIEW',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
@@ -995,12 +1001,15 @@ class _VariationOrderScreenState extends State<VariationOrderScreen> {
                 decoration: BoxDecoration(shape: BoxShape.circle, color: color),
               ),
               const SizedBox(width: 4),
-              Text(
-                '$count $label',
-                style: TextStyle(
-                  color: color,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
+              Flexible(
+                child: Text(
+                  '$count $label',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -1054,14 +1063,19 @@ class _VariationOrderScreenState extends State<VariationOrderScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'FIDIC Cl. 12/13 Cumulative Variation Cap (15%)',
-                      style: TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
+                    const Expanded(
+                      child: Text(
+                        'FIDIC Cl. 12/13 Cumulative Variation Cap (15%)',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
+                    const SizedBox(width: 8),
                     Text(
                       '${ratio.toStringAsFixed(1)}% / 15.0%',
                       style: TextStyle(
@@ -1237,21 +1251,27 @@ class _VariationOrderScreenState extends State<VariationOrderScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            const Icon(Icons.assignment_turned_in_outlined, size: 16, color: AppTheme.secondary),
-            const SizedBox(width: 6),
-            Text(
-              'CHANGE ORDER REGISTER ($count)',
-              style: const TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.5,
+        Expanded(
+          child: Row(
+            children: [
+              const Icon(Icons.assignment_turned_in_outlined, size: 16, color: AppTheme.secondary),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  'CHANGE ORDER REGISTER ($count)',
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        const SizedBox(width: 8),
         Text(
           'FIDIC Cl. 13.1 / 13.3 Protocol',
           style: const TextStyle(
@@ -1383,23 +1403,27 @@ class _VariationOrderScreenState extends State<VariationOrderScreen> {
                 const SizedBox(width: 8),
 
                 // Clause Reference Pill
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surfaceCard,
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: AppTheme.border),
-                  ),
-                  child: Text(
-                    item.clauseReference,
-                    style: const TextStyle(
-                      color: AppTheme.textSecondary,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
+                Flexible(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceCard,
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: AppTheme.border),
+                    ),
+                    child: Text(
+                      item.clauseReference,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: const TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
 
                 // Workflow Stage Badge
                 Container(
@@ -1961,12 +1985,16 @@ class _VariationOrderScreenState extends State<VariationOrderScreen> {
                     children: const [
                       Icon(Icons.check_circle_rounded, color: AppTheme.tertiary, size: 16),
                       SizedBox(width: 6),
-                      Text(
-                        'Variation Order Fully Executed & Logged',
-                        style: TextStyle(
-                          color: AppTheme.tertiary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                      Flexible(
+                        child: Text(
+                          'Variation Order Fully Executed & Logged',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
+                            color: AppTheme.tertiary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -2356,12 +2384,16 @@ class _NewVariationRequestBottomSheetState
                     children: [
                       Row(
                         children: [
-                          const Text(
-                            'New Variation Request',
-                            style: TextStyle(
-                              color: AppTheme.textPrimary,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                          const Flexible(
+                            child: Text(
+                              'New Variation Request',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: TextStyle(
+                                color: AppTheme.textPrimary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 8),

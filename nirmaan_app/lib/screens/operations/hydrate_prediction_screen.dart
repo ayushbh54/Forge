@@ -1039,7 +1039,7 @@ class _HydratePredictionScreenState extends State<HydratePredictionScreen>
         bannerBg = const Color(0xFF45111B);
         bannerBorder = const Color(0xFFFF4E64);
         icon = Icons.dangerous_rounded;
-        statusTitle = 'CRITICAL SEVERE PLUGGING RISK — RIVER CROSSING COLD SPOT';
+        statusTitle = 'CRITICAL SEVERE PLUGGING RISK — ACTIVE HYDRATE FORMATION RISK';
         statusDesc = 'Subcooling Margin ΔTsub = +${deltaTSub.toStringAsFixed(1)}°C > 6.0°C! Rapid clathrate agglomeration '
             'active at pipeline low spots & riverbeds. Immediate high-rate THI dosing or shock slug injection mandatory!';
         break;

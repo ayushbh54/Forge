@@ -24,7 +24,6 @@ import 'package:nirmaan_app/screens/quality/golden_weld_certification_screen.dar
 import 'package:nirmaan_app/screens/audit/audit_screen.dart';
 import 'package:nirmaan_app/screens/settings/settings_screen.dart';
 import 'package:nirmaan_app/screens/more/more_screen.dart';
-import 'package:nirmaan_app/core/taxonomy/project_archetype.dart';
 import 'package:nirmaan_app/core/taxonomy/archetype_controller.dart';
 import 'package:nirmaan_app/screens/truth/universal_truth_engine_screen.dart';
 import 'package:nirmaan_app/screens/lean/last_planner_lookahead_screen.dart';
@@ -72,6 +71,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
             if (provider.isLoading && provider.projects.isEmpty) {
               return const Center(
                 child: CircularProgressIndicator(color: Color(0xFF0284C7)),
+              );
+            }
+
+            if (provider.projects.isEmpty) {
+              return Scaffold(
+                backgroundColor: const Color(0xFF0B1326),
+                appBar: AppBar(
+                  backgroundColor: const Color(0xFF111C38),
+                  title: const Text('Nirmaan OS', style: TextStyle(color: Color(0xFFF1F5F9), fontWeight: FontWeight.bold)),
+                ),
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.folder_open_rounded, size: 64, color: Color(0xFF94A3B8)),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'No Projects Found',
+                        style: TextStyle(
+                          color: Color(0xFFF1F5F9),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Create your first project to get started.',
+                        style: TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: const Text('Create Project'),
+                      ),
+                    ],
+                  ),
+                ),
               );
             }
 
@@ -140,10 +176,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         _buildBlinkitCategoryGrid(context),
                         const SizedBox(height: 24),
 
-                        // Amazon-Style Horizontal Shelf: Quick Field Tools
+                        // Amazon-Style Horizontal Shelf: Quick Actions
                         _buildSectionHeader(
                           context,
-                          title: 'Quick Field Tools',
+                          title: 'Quick Actions',
                           subtitle: 'High-frequency site inspection & telemetry',
                         ),
                         const SizedBox(height: 12),
@@ -163,7 +199,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         // Recent Activity & Audit Ledger
                         _buildSectionHeader(
                           context,
-                          title: 'Recent Audit & Verification Log',
+                          title: 'Recent Activity',
                           subtitle: 'Immutable SHA-256 event trail',
                           actionLabel: 'Audit Ledger',
                           onAction: () {
@@ -205,6 +241,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 Row(
                   children: [
+                    const Text(
+                      'Nirmaan OS',
+                      style: TextStyle(
+                        color: Color(0xFFF1F5F9),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
@@ -258,7 +304,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        arch.location,
+                        project != null
+                            ? project.location
+                            : arch.location,
                         style: const TextStyle(
                           color: Color(0xFFF1F5F9),
                           fontSize: 13,
@@ -330,13 +378,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   border: Border.all(color: const Color(0xFF38BDF8), width: 1.2),
                 ),
                 child: const Center(
-                  child: Text(
-                    'OIL',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  child: Icon(
+                    Icons.person_outline,
+                    color: Colors.white,
+                    size: 18,
                   ),
                 ),
               ),
@@ -725,24 +770,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text(
-                  project.name,
-                  style: const TextStyle(
-                    color: Color(0xFFF1F5F9),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      project.name,
+                      style: const TextStyle(
+                        color: Color(0xFFF1F5F9),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${project.code} • Active Pipeline',
+                      style: const TextStyle(
+                        color: Color(0xFF94A3B8),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               StatusBadge(status: project.status),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
+          const Text(
+            'Key Metrics',
+            style: TextStyle(
+              color: Color(0xFF94A3B8),
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
           Row(
             children: [
-              Expanded(child: _buildEVMBlock('Schedule (SPI)', project.spi, project.spi >= 1.0)),
+              Expanded(child: _buildEVMBlock('SPI', project.spi, project.spi >= 1.0)),
               const SizedBox(width: 12),
-              Expanded(child: _buildEVMBlock('Cost (CPI)', project.cpi, project.cpi >= 1.0)),
+              Expanded(child: _buildEVMBlock('CPI', project.cpi, project.cpi >= 1.0)),
               const SizedBox(width: 12),
               Expanded(
                 child: InkWell(

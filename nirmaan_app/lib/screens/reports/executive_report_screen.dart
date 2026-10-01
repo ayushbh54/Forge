@@ -2506,13 +2506,11 @@ Verification Hash: e3b0c44298fc1c14...
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
                 icon: const Icon(Icons.picture_as_pdf_rounded, color: Colors.white, size: 20),
-                label: Flexible(
-                  child: Text(
-                    'Generate Formal PDF Dossier (${_currentTemplateMeta.shortCode})',
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                label: Text(
+                  'Generate Formal PDF Dossier (${_currentTemplateMeta.shortCode})',
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 onPressed: _generateFormalPdfDossier,
               ),
@@ -2531,13 +2529,11 @@ Verification Hash: e3b0c44298fc1c14...
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                       ),
                       icon: const Icon(Icons.share_rounded, size: 16, color: AppTheme.primaryLight),
-                      label: const Flexible(
-                        child: Text(
-                          'Share via WhatsApp / Email',
-                          style: TextStyle(color: AppTheme.textPrimary, fontSize: 12),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      label: const Text(
+                        'Share via WhatsApp / Email',
+                        style: TextStyle(color: AppTheme.textPrimary, fontSize: 12),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       onPressed: _shareViaWhatsAppEmail,
                     ),
@@ -2554,13 +2550,11 @@ Verification Hash: e3b0c44298fc1c14...
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                       ),
                       icon: const Icon(Icons.print_rounded, size: 16, color: AppTheme.secondary),
-                      label: const Flexible(
-                        child: Text(
-                          'Print Sign-Off Sheet',
-                          style: TextStyle(color: AppTheme.textPrimary, fontSize: 12),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      label: const Text(
+                        'Print Sign-Off Sheet',
+                        style: TextStyle(color: AppTheme.textPrimary, fontSize: 12),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       onPressed: _printSignOffSheet,
                     ),

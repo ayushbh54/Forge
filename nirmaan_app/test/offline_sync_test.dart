@@ -257,13 +257,13 @@ void main() {
       expect(syncService.getAllItems().first.status, SyncItemStatus.pending);
 
       // Attempt 2
-      result = await syncService.syncPendingData();
+      result = await syncService.syncPendingData(forceAll: true);
       expect(syncService.getAllItems().first.retryCount, 2);
 
       // Exhaust up to maxRetries (5)
-      await syncService.syncPendingData(); // 3
-      await syncService.syncPendingData(); // 4
-      await syncService.syncPendingData(); // 5
+      await syncService.syncPendingData(forceAll: true); // 3
+      await syncService.syncPendingData(forceAll: true); // 4
+      await syncService.syncPendingData(forceAll: true); // 5
 
       final currentItem = syncService.getAllItems().first;
       expect(currentItem.retryCount, 5);

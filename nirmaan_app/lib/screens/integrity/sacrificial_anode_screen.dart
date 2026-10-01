@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
 
 // ============================================================================
@@ -450,7 +449,7 @@ class _SacrificialAnodeScreenState extends State<SacrificialAnodeScreen>
   double _calcEfficiency = 0.50; // epsilon
   double _calcTheoCapacity = 2200.0; // mu (Ah/kg)
   double _calcCurrentMa = 55.0; // Mean current I in mA
-  double _calcUtilization = 0.85; // u
+  final double _calcUtilization = 0.85; // u
   double _calcPipePotentialMv = -850.0; // Closed circuit pipe potential
   double _calcSoilResistivity = 55.0; // Soil resistivity Ohm-m
   bool _calcAutoCurrentFromResistance = true;
@@ -899,7 +898,7 @@ class _SacrificialAnodeScreenState extends State<SacrificialAnodeScreen>
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    '18 Solid-State Decouplers (SSD) Active · $underProtectedCount Low E_off · $acHazardsCount AC Alert',
+                    '18 Solid-State Decouplers (SSD) Active · $underProtectedCount Low E_off · $acHazardsCount AC Alert${overProtectedCount > 0 ? " · $overProtectedCount Over-Prot" : ""}',
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 11,
@@ -1086,7 +1085,7 @@ class _SacrificialAnodeScreenState extends State<SacrificialAnodeScreen>
               width: cardWidth,
               label: 'MEAN CP CURRENT',
               value: '${meanCurrent.toStringAsFixed(1)} mA',
-              subtext: 'Across ${_stations.length} Shunts',
+              subtext: '${compliantRate.toStringAsFixed(0)}% NACE Compliant',
               icon: Icons.electric_meter_rounded,
               color: AppTheme.primaryLight,
             ),
@@ -1838,7 +1837,7 @@ class _SacrificialAnodeScreenState extends State<SacrificialAnodeScreen>
                       const Text('Auto (I=ΔE/R)', style: TextStyle(fontSize: 10, color: AppTheme.textMuted)),
                       Switch(
                         value: _calcAutoCurrentFromResistance,
-                        activeColor: AppTheme.primaryLight,
+                        activeThumbColor: AppTheme.primaryLight,
                         onChanged: (val) {
                           setState(() {
                             _calcAutoCurrentFromResistance = val;
@@ -2522,7 +2521,6 @@ class _SacrificialAnodeScreenState extends State<SacrificialAnodeScreen>
                 DataColumn(label: Text('Status', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.textSecondary))),
               ],
               rows: _stations.map((s) {
-                final isWarn = s.complianceStatus != StationComplianceStatus.fullyCompliant;
                 return DataRow(
                   cells: [
                     DataCell(
@@ -2820,7 +2818,7 @@ class _SacrificialAnodeScreenState extends State<SacrificialAnodeScreen>
                   const Text('Anode Metallurgy', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.primaryLight)),
                   const SizedBox(height: 6),
                   DropdownButtonFormField<SacrificialAlloyType>(
-                    value: selectedAlloy,
+                    initialValue: selectedAlloy,
                     dropdownColor: AppTheme.surfaceCard,
                     style: const TextStyle(fontSize: 12, color: AppTheme.textPrimary),
                     decoration: const InputDecoration(isDense: true),

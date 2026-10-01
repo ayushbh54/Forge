@@ -792,9 +792,9 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: AppTheme.primary.withOpacity(0.15),
+                          color: AppTheme.primary.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: AppTheme.primaryLight.withOpacity(0.4)),
+                          border: Border.all(color: AppTheme.primaryLight.withValues(alpha: 0.4)),
                         ),
                         child: const Icon(Icons.menu_book_rounded, color: AppTheme.primaryLight, size: 24),
                       ),
@@ -939,9 +939,9 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          color: calc.overallStatusColor.withOpacity(0.15),
+                          color: calc.overallStatusColor.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: calc.overallStatusColor.withOpacity(0.6)),
+                          border: Border.all(color: calc.overallStatusColor.withValues(alpha: 0.6)),
                         ),
                         child: Text(
                           calc.overallStatusLabel,
@@ -1234,7 +1234,7 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
         padding: const EdgeInsets.symmetric(horizontal: 12),
         scrollDirection: Axis.horizontal,
         itemCount: _presets.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final preset = _presets[index];
           final isSelected = index == _selectedPresetIndex;
@@ -1242,7 +1242,7 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
             selected: isSelected,
             showCheckmark: false,
             backgroundColor: AppTheme.surfaceCard,
-            selectedColor: AppTheme.primary.withOpacity(0.3),
+            selectedColor: AppTheme.primary.withValues(alpha: 0.3),
             side: BorderSide(
               color: isSelected ? AppTheme.primaryLight : AppTheme.border,
               width: isSelected ? 1.5 : 1.0,
@@ -1301,7 +1301,7 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppTheme.primary.withOpacity(0.15),
+                    color: AppTheme.primary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(calc.fittingType.icon, color: AppTheme.primaryLight, size: 24),
@@ -1346,9 +1346,9 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: calc.overallStatusColor.withOpacity(0.15),
+                    color: calc.overallStatusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: calc.overallStatusColor.withOpacity(0.5)),
+                    border: Border.all(color: calc.overallStatusColor.withValues(alpha: 0.5)),
                   ),
                   child: Text(
                     calc.overallStatusLabel,
@@ -1476,7 +1476,7 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppTheme.surface.withOpacity(0.85),
+                        color: AppTheme.surface.withValues(alpha: 0.85),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(color: AppTheme.border),
                       ),
@@ -1525,7 +1525,7 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppTheme.surface.withOpacity(0.85),
+                        color: AppTheme.surface.withValues(alpha: 0.85),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(color: AppTheme.border),
                       ),
@@ -1685,9 +1685,9 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: AppTheme.primary.withOpacity(0.12),
+              color: AppTheme.primary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.primary.withOpacity(0.4)),
+              border: Border.all(color: AppTheme.primary.withValues(alpha: 0.4)),
             ),
             child: Row(
               children: [
@@ -1780,7 +1780,7 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: accentColor.withOpacity(0.15),
+              color: accentColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
@@ -2353,7 +2353,7 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
       decoration: BoxDecoration(
         color: AppTheme.surfaceCard,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: statusColor.withOpacity(0.4)),
+        border: Border.all(color: statusColor.withValues(alpha: 0.4)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2370,7 +2370,7 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.15),
+                  color: statusColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -2415,7 +2415,7 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
             decoration: BoxDecoration(
               color: AppTheme.surfaceCard,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: calc.overallStatusColor.withOpacity(0.5)),
+              border: Border.all(color: calc.overallStatusColor.withValues(alpha: 0.5)),
             ),
             child: Row(
               children: [
@@ -2580,7 +2580,7 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
             decoration: BoxDecoration(
               color: const Color(0xFF091224),
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: AppTheme.border.withOpacity(0.5)),
+              border: Border.all(color: AppTheme.border.withValues(alpha: 0.5)),
             ),
             child: Text(
               formula,
@@ -2653,7 +2653,7 @@ class _ThrustBlockDesignScreenState extends State<ThrustBlockDesignScreen>
               activeTrackColor: activeColor,
               inactiveTrackColor: AppTheme.border,
               thumbColor: activeColor,
-              overlayColor: activeColor.withOpacity(0.2),
+              overlayColor: activeColor.withValues(alpha: 0.2),
               trackHeight: 3.5,
             ),
             child: Slider(
@@ -2747,7 +2747,6 @@ class _ThrustBlock3dPainter extends CustomPainter {
     final b1 = iso(-l / 2, -w / 2, 0);
     final b2 = iso(l / 2, -w / 2, 0);
     final b3 = iso(l / 2, w / 2, 0);
-    final b4 = iso(-l / 2, w / 2, 0);
 
     final t1 = iso(-l / 2, -w / 2, h);
     final t2 = iso(l / 2, -w / 2, h);
@@ -2945,7 +2944,6 @@ class _ThrustBlock2dElevationPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
-    final h = size.height;
 
     // Ground level line at y = 45
     const double glY = 48.0;

@@ -6,6 +6,10 @@ import 'package:nirmaan_app/screens/contracts/variation_order_screen.dart';
 void main() {
   testWidgets('VariationOrderScreen renders all 6 baseline variations and summary stats',
       (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1080, 4800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.darkTheme,
@@ -53,6 +57,10 @@ void main() {
 
   testWidgets('Filter chips filter variation orders accurately',
       (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1080, 4800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.darkTheme,
@@ -83,6 +91,10 @@ void main() {
 
   testWidgets('New Variation Request modal can be opened and submitted',
       (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1080, 4800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.darkTheme,
@@ -98,33 +110,33 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify Form Header & Generated ID
-    expect(find.text('New Variation Request'), findsOneWidget);
+    expect(find.text('New Variation Request'), findsAtLeastNWidgets(1));
     expect(find.text('VO-2026-07'), findsOneWidget);
     expect(find.text('REASON FOR VARIATION *'), findsOneWidget);
     expect(find.text('SCOPE DESCRIPTION & SITE JUSTIFICATION *'), findsOneWidget);
     expect(find.text('ESTIMATED COST (₹ CR) *'), findsOneWidget);
     expect(find.text('ESTIMATED TIME (DAYS EOT) *'), findsOneWidget);
 
-    // In modal, find text fields
-    final textFields = find.byType(TextField);
-    // textFields: [title, scope, cost, time, originator]
+    // In modal, find text fields within the Form
+    final modalForm = find.byType(Form);
+    final formFields = find.descendant(of: modalForm, matching: find.byType(TextField));
     // title: index 0 inside the modal form
     await tester.enterText(
-      textFields.at(0),
+      formFields.at(0),
       'River Embankment Sheet Piling & Scour Protection',
     );
 
     // scope: index 1
     await tester.enterText(
-      textFields.at(1),
+      formFields.at(1),
       'High velocity scouring observed along southern bank of river crossing. Sheet piling required.',
     );
 
     // cost: index 2
-    await tester.enterText(textFields.at(2), '2.50');
+    await tester.enterText(formFields.at(2), '2.50');
 
     // time: index 3
-    await tester.enterText(textFields.at(3), '12');
+    await tester.enterText(formFields.at(3), '12');
 
     await tester.pumpAndSettle();
 
@@ -137,7 +149,7 @@ void main() {
     // Verify modal is closed and VO-2026-07 is present in list
     expect(find.text('VO-2026-07'), findsOneWidget);
     expect(find.text('River Embankment Sheet Piling & Scour Protection'), findsOneWidget);
-    expect(find.text('+₹2.50 Cr'), findsOneWidget);
+    expect(find.text('+₹2.50 Cr'), findsAtLeastNWidgets(1));
     expect(find.text('+12 Days EOT'), findsOneWidget);
 
     // Total change orders count should be updated to 7

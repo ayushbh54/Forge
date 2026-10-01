@@ -523,8 +523,10 @@ class _ScheduleExportScreenState extends State<ScheduleExportScreen> {
                         ),
                         Radio<ScheduleExportFormat>(
                           value: option.format,
+                          // ignore: deprecated_member_use
                           groupValue: _selectedFormat,
                           activeColor: option.accentColor,
+                          // ignore: deprecated_member_use
                           onChanged: (val) {
                             if (val != null) {
                               setState(() => _selectedFormat = val);
@@ -1009,7 +1011,7 @@ class _ScheduleExportScreenState extends State<ScheduleExportScreen> {
           const SizedBox(width: 8),
           Switch.adaptive(
             value: value,
-            activeColor: accentColor,
+            activeThumbColor: accentColor,
             activeTrackColor: accentColor.withAlpha(70),
             inactiveThumbColor: AppTheme.textMuted,
             inactiveTrackColor: AppTheme.surface,
@@ -1723,7 +1725,7 @@ class _ScheduleExportScreenState extends State<ScheduleExportScreen> {
                 }
 
                 await Future.delayed(const Duration(milliseconds: 250));
-                if (!mounted) return;
+                if (!mounted || !dialogCtx.mounted) return;
 
                 // Close progress dialog
                 Navigator.of(dialogCtx).pop();

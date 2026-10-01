@@ -2408,7 +2408,7 @@ class _Api6dValveFatScreenState extends State<Api6dValveFatScreen>
         Switch.adaptive(
           value: value,
           onChanged: onChanged,
-          activeColor: AppTheme.primaryLight,
+          activeThumbColor: AppTheme.primaryLight,
           activeTrackColor: AppTheme.primary.withValues(alpha: 0.5),
         ),
         const SizedBox(width: 4),
@@ -3160,7 +3160,7 @@ class _Api6dValveFatScreenState extends State<Api6dValveFatScreen>
                   ],
                 ),
               ),
-              if (action != null) action,
+              ?action,
             ],
           ),
           const SizedBox(height: 12),

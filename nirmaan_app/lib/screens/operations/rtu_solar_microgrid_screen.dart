@@ -1205,7 +1205,7 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
                       style: TextStyle(color: AppTheme.textPrimary, fontSize: 11)),
                   const SizedBox(height: 4),
                   Text('Digital Signature: Chief SCADA Telemetry Engineer',
-                      style: TextStyle(color: AppTheme.textSecondary.withOpacity(0.8), fontSize: 11)),
+                      style: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.8), fontSize: 11)),
                   const SizedBox(height: 4),
                   const Text('Target Autonomy: 72.0 Hours No-Sun (Compliant)',
                       style: TextStyle(color: AppTheme.tertiary, fontSize: 11, fontWeight: FontWeight.bold)),
@@ -1269,9 +1269,9 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: station.modeColor.withOpacity(0.15),
+                    color: station.modeColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: station.modeColor.withOpacity(0.5)),
+                    border: Border.all(color: station.modeColor.withValues(alpha: 0.5)),
                   ),
                   child: Text(
                     station.modeLabel,
@@ -1288,7 +1288,7 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
             Text(
               'IEEE 1547 / IEC 61427 — Remote SV Stations Telemetry',
               style: TextStyle(
-                color: AppTheme.textSecondary.withOpacity(0.8),
+                color: AppTheme.textSecondary.withValues(alpha: 0.8),
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
               ),
@@ -1372,7 +1372,7 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
   Widget _buildDgCrankingBanner() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: AppTheme.secondary.withOpacity(0.2),
+      color: AppTheme.secondary.withValues(alpha: 0.2),
       child: Row(
         children: [
           const SizedBox(
@@ -1402,7 +1402,7 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
   Widget _buildPstBanner() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: AppTheme.primary.withOpacity(0.25),
+      color: AppTheme.primary.withValues(alpha: 0.25),
       child: Row(
         children: [
           const SizedBox(
@@ -1433,11 +1433,11 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
     return Container(
       height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      color: AppTheme.surfaceContainerHigh.withOpacity(0.5),
+      color: AppTheme.surfaceContainerHigh.withValues(alpha: 0.5),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: _stations.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final s = _stations[index];
           final isSelected = index == _selectedStationIndex;
@@ -1545,9 +1545,9 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppTheme.primary.withOpacity(0.15),
+                    color: AppTheme.primary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppTheme.primaryLight.withOpacity(0.4)),
+                    border: Border.all(color: AppTheme.primaryLight.withValues(alpha: 0.4)),
                   ),
                   child: const Icon(
                     Icons.solar_power_rounded,
@@ -1843,7 +1843,7 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
                           Text(
                             'MPPT: ${station.mppt.stage}',
                             style: TextStyle(
-                              color: AppTheme.secondary.withOpacity(0.9),
+                              color: AppTheme.secondary.withValues(alpha: 0.9),
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
                             ),
@@ -2185,9 +2185,9 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppTheme.secondary.withOpacity(0.12),
+        color: AppTheme.secondary.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.secondary.withOpacity(0.4)),
+        border: Border.all(color: AppTheme.secondary.withValues(alpha: 0.4)),
       ),
       child: Row(
         children: const [
@@ -2527,7 +2527,7 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
                     drawVerticalLine: false,
                     horizontalInterval: 1000,
                     getDrawingHorizontalLine: (value) => FlLine(
-                      color: AppTheme.border.withOpacity(0.5),
+                      color: AppTheme.border.withValues(alpha: 0.5),
                       strokeWidth: 1,
                     ),
                   ),
@@ -2594,7 +2594,7 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: AppTheme.secondary.withOpacity(0.12),
+                        color: AppTheme.secondary.withValues(alpha: 0.12),
                       ),
                     ),
                   ],
@@ -2688,7 +2688,7 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
     return Card(
       color: AppTheme.surfaceCard,
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: autonomy.statusColor.withOpacity(0.6)),
+        side: BorderSide(color: autonomy.statusColor.withValues(alpha: 0.6)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
@@ -3033,9 +3033,9 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: AppTheme.tertiary.withOpacity(0.15),
+                    color: AppTheme.tertiary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: AppTheme.tertiary.withOpacity(0.4)),
+                    border: Border.all(color: AppTheme.tertiary.withValues(alpha: 0.4)),
                   ),
                   child: const Text(
                     'ONLINE',
@@ -3152,9 +3152,9 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: AppTheme.tertiary.withOpacity(0.15),
+                    color: AppTheme.tertiary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: AppTheme.tertiary.withOpacity(0.4)),
+                    border: Border.all(color: AppTheme.tertiary.withValues(alpha: 0.4)),
                   ),
                   child: const Text(
                     '100% OPEN',
@@ -3296,7 +3296,7 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
     return Card(
       color: AppTheme.surfaceCard,
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: dg.stateColor.withOpacity(0.6)),
+        side: BorderSide(color: dg.stateColor.withValues(alpha: 0.6)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
@@ -3306,7 +3306,7 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: dg.stateColor.withOpacity(0.15),
+                color: dg.stateColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(Icons.power_rounded, color: dg.stateColor, size: 26),
@@ -3339,7 +3339,7 @@ class _RtuSolarMicrogridScreenState extends State<RtuSolarMicrogridScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: dg.stateColor.withOpacity(0.15),
+                color: dg.stateColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(4),
                 border: Border.all(color: dg.stateColor),
               ),

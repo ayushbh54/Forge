@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/taxonomy/project_archetype.dart';
@@ -1112,7 +1111,6 @@ class _GeminiBrainScreenState extends State<GeminiBrainScreen> {
         ];
         break;
       case GeminiIndustrialMode.copilotMastermind:
-      default:
         prompts = [
           'Comprehensive Project Health Diagnostic',
           'Check ${arch.standards.first} compliance',

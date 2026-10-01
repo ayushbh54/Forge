@@ -580,9 +580,9 @@ class _CarbonCreditsScreenState extends State<CarbonCreditsScreen>
   double _calcDiameterMm = 610.0;     // 24"
   double _calcLengthKm = 26.4;        // 26.4 km
   double _calcPressureBar = 65.0;      // 65 bar
-  double _calcTempCelsius = 24.0;     // 24 C
+  final double _calcTempCelsius = 24.0;     // 24 C
   double _calcMethaneFraction = 0.94; // 94% CH4
-  double _calcCombustionEff = 0.985;  // 98.5%
+  final double _calcCombustionEff = 0.985;  // 98.5%
   bool _calcIsFlared = true;
   bool _calcIsVruCaptured = false;
 
@@ -1344,7 +1344,7 @@ class _CarbonCreditsScreenState extends State<CarbonCreditsScreen>
                     ),
                     const SizedBox(height: 14),
                     DropdownButtonFormField<LdarComponentType>(
-                      value: compType,
+                      initialValue: compType,
                       dropdownColor: AppTheme.surfaceCard,
                       decoration: const InputDecoration(labelText: 'Component Classification'),
                       items: LdarComponentType.values.map((t) {
