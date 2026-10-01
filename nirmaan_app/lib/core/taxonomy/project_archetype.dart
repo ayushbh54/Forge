@@ -1,0 +1,1155 @@
+import 'package:flutter/material.dart';
+
+/// Industrial classification for physical project topology
+enum ProjectTypology {
+  linearCorridor,
+  distributedNodal,
+  linearViaduct,
+  subterraneanTbm,
+  industrialNodal,
+  highDensityBim,
+  hyperDistributed,
+  hourByHourTurnaround,
+}
+
+/// Dynamic sensor weighting specification for the Universal Truth Engine
+class SensorWeightConfig {
+  final String name;
+  final String code;
+  final double weight;
+  final bool isApplicable;
+  final String status;
+  final String lastTelemetry;
+  final IconData icon;
+
+  const SensorWeightConfig({
+    required this.name,
+    required this.code,
+    required this.weight,
+    required this.isApplicable,
+    required this.status,
+    required this.lastTelemetry,
+    required this.icon,
+  });
+}
+
+/// Archetype performance KPI metric
+class ArchetypeKpi {
+  final String label;
+  final String value;
+  final String target;
+  final double progressPercent;
+  final Color color;
+  final IconData icon;
+
+  const ArchetypeKpi({
+    required this.label,
+    required this.value,
+    required this.target,
+    required this.progressPercent,
+    required this.color,
+    required this.icon,
+  });
+}
+
+/// Live site story item for Instagram-style carousel
+class ArchetypeStoryItem {
+  final String title;
+  final String metric;
+  final IconData icon;
+  final Color color;
+  final String details;
+
+  const ArchetypeStoryItem({
+    required this.title,
+    required this.metric,
+    required this.icon,
+    required this.color,
+    required this.details,
+  });
+}
+
+/// Global Project Archetype Definition
+class ProjectArchetype {
+  final String id;
+  final String name;
+  final String shortName;
+  final String client;
+  final String location;
+  final String scale;
+  final String budget;
+  final String contractModel;
+  final ProjectTypology typology;
+  final String domain;
+  final List<String> standards;
+  final Color accentColor;
+  final IconData icon;
+  final double verifiedConsensus;
+  final List<ArchetypeKpi> kpis;
+  final List<SensorWeightConfig> sensors;
+  final List<ArchetypeStoryItem> stories;
+  final String primaryChainageOrWbs;
+  final String physicalUnit;
+
+  const ProjectArchetype({
+    required this.id,
+    required this.name,
+    required this.shortName,
+    required this.client,
+    required this.location,
+    required this.scale,
+    required this.budget,
+    required this.contractModel,
+    required this.typology,
+    required this.domain,
+    required this.standards,
+    required this.accentColor,
+    required this.icon,
+    required this.verifiedConsensus,
+    required this.kpis,
+    required this.sensors,
+    required this.stories,
+    required this.primaryChainageOrWbs,
+    required this.physicalUnit,
+  });
+
+  /// 8 Flagship Global Project Archetypes covering all 100 global project classes
+  static final List<ProjectArchetype> allArchetypes = [
+    // 1. Cross-Country Hydrocarbon Pipeline (Linear Corridor)
+    ProjectArchetype(
+      id: 'pipeline_cross_country',
+      name: 'Cross-Country Crude & Natural Gas Pipeline',
+      shortName: '194.5 km Crude Pipeline',
+      client: 'Oil India Limited (OIL)',
+      location: 'Assam RoW • KM 142.8',
+      scale: 'Mega (>₹6,850 Cr)',
+      budget: '₹ 6,850 Cr',
+      contractModel: 'FIDIC Red Book EPC Turnkey',
+      typology: ProjectTypology.linearCorridor,
+      domain: 'Hydrocarbons & Petrochemicals',
+      standards: ['ASME B31.8', 'API 5L X70', 'OISD-141', 'PNGRB T4S'],
+      accentColor: const Color(0xFF0284C7),
+      icon: Icons.alt_route_rounded,
+      verifiedConsensus: 99.4,
+      primaryChainageOrWbs: 'Chainage KM 142.8 / 194.5',
+      physicalUnit: 'KM Lowered',
+      kpis: const [
+        ArchetypeKpi(
+          label: 'Lowering & Backfill',
+          value: '142.8 km',
+          target: '194.5 km',
+          progressPercent: 0.734,
+          color: Color(0xFF10B981),
+          icon: Icons.timeline_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'AUT Weld Phased Array',
+          value: '99.8%',
+          target: '100% (API 1104)',
+          progressPercent: 0.998,
+          color: Color(0xFF0284C7),
+          icon: Icons.biotech_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'SCADA Hydrotest Pressure',
+          value: '64.2 bar',
+          target: '65.0 bar hold',
+          progressPercent: 0.987,
+          color: Color(0xFFF59E0B),
+          icon: Icons.speed_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'RoW Encroachment Defect',
+          value: '0 Detected',
+          target: '0 Tolerated',
+          progressPercent: 1.0,
+          color: Color(0xFF10B981),
+          icon: Icons.shield_rounded,
+        ),
+      ],
+      sensors: const [
+        SensorWeightConfig(
+          name: 'Satellite Sentinel-1 SAR',
+          code: 'SAT_SAR',
+          weight: 0.30,
+          isApplicable: true,
+          status: 'ONLINE (99.8%)',
+          lastTelemetry: 'Interferometric coherence 0.89 confirmed',
+          icon: Icons.satellite_alt_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Drone RoW LiDAR Orthomosaic',
+          code: 'DRONE_LIDAR',
+          weight: 0.25,
+          isApplicable: true,
+          status: 'PATROLLING',
+          lastTelemetry: '3D point cloud 450 pts/m² at KM 142.8',
+          icon: Icons.flight_takeoff_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'SCADA Solar RTU Edge Telemetry',
+          code: 'SCADA_RTU',
+          weight: 0.20,
+          isApplicable: true,
+          status: 'LIVE (64.2 bar)',
+          lastTelemetry: 'Modbus TCP SV-04 pressure transmitter sync',
+          icon: Icons.sensors_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Daily DPR Welder Tally',
+          code: 'DPR_TALLY',
+          weight: 0.15,
+          isApplicable: true,
+          status: 'VERIFIED',
+          lastTelemetry: '142 joints radiographic AUT cleared',
+          icon: Icons.assignment_turned_in_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Primavera P6 WBS Baseline',
+          code: 'P6_SCHEDULE',
+          weight: 0.10,
+          isApplicable: true,
+          status: 'ON TRACK (SPI 1.04)',
+          lastTelemetry: 'Critical path lowering activity ACT-042',
+          icon: Icons.calendar_month_rounded,
+        ),
+      ],
+      stories: const [
+        ArchetypeStoryItem(
+          title: 'Satellite SAR',
+          metric: '99.8% Match',
+          icon: Icons.satellite_alt_rounded,
+          color: Color(0xFF0284C7),
+          details: 'Sentinel-1 SAR interferometry verified pipeline trench backfill across 142.8 km.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Drone RoW',
+          metric: 'Live Patrol',
+          icon: Icons.flight_takeoff_rounded,
+          color: Color(0xFF38BDF8),
+          details: 'Autonomous drone flight path active along Brahmaputra river crossing.',
+        ),
+        ArchetypeStoryItem(
+          title: '3D GIS Map',
+          metric: 'KM 142.8',
+          icon: Icons.map_rounded,
+          color: Color(0xFF10B981),
+          details: 'Digital twin terrain corridor with 0.5m elevation contours and valve skids.',
+        ),
+        ArchetypeStoryItem(
+          title: 'SV-04 Solar',
+          metric: '64.2 bar',
+          icon: Icons.solar_power_rounded,
+          color: Color(0xFFFFB95F),
+          details: 'Sectionalizing valve RTU solar microgrid with 94% battery SoC and 0% LEL.',
+        ),
+        ArchetypeStoryItem(
+          title: 'AUT Phased',
+          metric: '100% Pass',
+          icon: Icons.biotech_rounded,
+          color: Color(0xFF00E5FF),
+          details: 'Automated ultrasonic testing cleared all 142 pipeline welds under API 1104.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Gemini Brain',
+          metric: 'OISD Valid',
+          icon: Icons.psychology_rounded,
+          color: Color(0xFF818CF8),
+          details: 'Zero compliance variance detected across PNGRB T4S and OISD-141 norms.',
+        ),
+      ],
+    ),
+
+    // 2. 1,000 MW Utility Solar PV Farm (Distributed Nodal)
+    ProjectArchetype(
+      id: 'solar_utility_farm',
+      name: '1,000 MW Utility-Scale Solar PV Farm & BESS',
+      shortName: '1,000 MW Solar PV Farm',
+      client: 'Solar Energy Corporation of India (SECI)',
+      location: 'Bhadla Solar Park, Rajasthan',
+      scale: 'Large (₹4,200 Cr)',
+      budget: '₹ 4,200 Cr',
+      contractModel: 'EPC Lump Sum Turnkey with 25-Yr O&M',
+      typology: ProjectTypology.distributedNodal,
+      domain: 'Power & Renewable Energy',
+      standards: ['IEC 61215', 'IEC 61730', 'IEEE 1547', 'CEA Grid Standard'],
+      accentColor: const Color(0xFFF59E0B),
+      icon: Icons.solar_power_rounded,
+      verifiedConsensus: 98.7,
+      primaryChainageOrWbs: 'Plot Block A-04 / 2.2M Panels',
+      physicalUnit: 'Modules Erected',
+      kpis: const [
+        ArchetypeKpi(
+          label: 'Solar Modules Installed',
+          value: '1.84M / 2.20M',
+          target: '2,200,000 Panels',
+          progressPercent: 0.836,
+          color: Color(0xFFF59E0B),
+          icon: Icons.grid_view_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Inverter SCADA Telemetry',
+          value: '842 MW Peak',
+          target: '1,000 MW Rated',
+          progressPercent: 0.842,
+          color: Color(0xFF10B981),
+          icon: Icons.bolt_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'BESS 200 MWh Storage',
+          value: '94% SoC',
+          target: '100% Ready',
+          progressPercent: 0.940,
+          color: Color(0xFF0284C7),
+          icon: Icons.battery_charging_full_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'String Inverter Availability',
+          value: '99.9%',
+          target: '99.5% Minimum',
+          progressPercent: 0.999,
+          color: Color(0xFF10B981),
+          icon: Icons.power_rounded,
+        ),
+      ],
+      sensors: const [
+        SensorWeightConfig(
+          name: 'Satellite Thermal Multispectral',
+          code: 'SAT_THERMAL',
+          weight: 0.35,
+          isApplicable: true,
+          status: 'ONLINE (98.7%)',
+          lastTelemetry: 'Zero hot-spot cell degradation across 2,400 strings',
+          icon: Icons.satellite_alt_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Drone Thermal Orthomosaic',
+          code: 'DRONE_THERMAL',
+          weight: 0.30,
+          isApplicable: true,
+          status: 'ACTIVE FLIGHT',
+          lastTelemetry: 'IR radiometry detected 2 bypass diode anomalies Block C',
+          icon: Icons.flight_takeoff_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Inverter SCADA & Pyranometer',
+          code: 'SCADA_SOLAR',
+          weight: 0.20,
+          isApplicable: true,
+          status: 'LIVE (842 MW)',
+          lastTelemetry: 'Global Horizontal Irradiance 940 W/m² logged',
+          icon: Icons.wb_sunny_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'DC Cabling Trench Tally',
+          code: 'CABLING_TALLY',
+          weight: 0.10,
+          isApplicable: true,
+          status: 'VERIFIED',
+          lastTelemetry: '1,420 km 1500V DC solar cable undergrounding completed',
+          icon: Icons.cable_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Primavera P6 Grid Sync WBS',
+          code: 'P6_SCHEDULE',
+          weight: 0.05,
+          isApplicable: true,
+          status: 'ON TRACK (SPI 1.02)',
+          lastTelemetry: '400kV Substation bay charged successfully',
+          icon: Icons.calendar_month_rounded,
+        ),
+      ],
+      stories: const [
+        ArchetypeStoryItem(
+          title: 'Solar Sat SAR',
+          metric: '98.7% Verified',
+          icon: Icons.satellite_alt_rounded,
+          color: Color(0xFFF59E0B),
+          details: 'Satellite reflectance analysis confirmed 1.84M trackers deployed.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Drone IR',
+          metric: 'Thermal Clear',
+          icon: Icons.flight_takeoff_rounded,
+          color: Color(0xFF10B981),
+          details: 'FLIR radiometric scan confirmed zero hot spots in Block A & B arrays.',
+        ),
+        ArchetypeStoryItem(
+          title: 'BESS 200MWh',
+          metric: '94% SoC',
+          icon: Icons.battery_charging_full_rounded,
+          color: Color(0xFF0284C7),
+          details: 'Lithium iron phosphate containers pre-commissioned at 400kV switchyard.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Inverter SCADA',
+          metric: '842 MW Peak',
+          icon: Icons.bolt_rounded,
+          color: Color(0xFFFFB95F),
+          details: 'String inverters operating at 99.2% MPPT efficiency in 44°C ambient.',
+        ),
+      ],
+    ),
+
+    // 3. 508 km High-Speed Rail Viaduct & Track (Linear Viaduct)
+    ProjectArchetype(
+      id: 'hsr_bullet_train',
+      name: '508 km High-Speed Rail Viaduct & Shinkansen Track',
+      shortName: '508 km Bullet Train',
+      client: 'National High Speed Rail Corp (NHSRCL / JICA)',
+      location: 'Mumbai-Ahmedabad Corridor • C4 Viaduct',
+      scale: 'Mega (>₹1,08,000 Cr)',
+      budget: '₹ 1,08,000 Cr',
+      contractModel: 'JICA Official Development Assistance / FIDIC',
+      typology: ProjectTypology.linearViaduct,
+      domain: 'Transport & Heavy Civil',
+      standards: ['JICA Shinkansen', 'EN 1992 Eurocode 2', 'RDSO HSR 2020', 'IRS Concrete'],
+      accentColor: const Color(0xFF38BDF8),
+      icon: Icons.train_rounded,
+      verifiedConsensus: 99.6,
+      primaryChainageOrWbs: 'Chainage CH 214+400 / Pier P-842',
+      physicalUnit: 'Viaduct Spans Launched',
+      kpis: const [
+        ArchetypeKpi(
+          label: 'Full Span Gantry Castings',
+          value: '412 / 508 km',
+          target: '508 km Completed',
+          progressPercent: 0.811,
+          color: Color(0xFF38BDF8),
+          icon: Icons.view_column_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Slab Track Millimeter Accuracy',
+          value: '0.2 mm',
+          target: '≤ 0.5 mm Tolerance',
+          progressPercent: 0.985,
+          color: Color(0xFF10B981),
+          icon: Icons.straighten_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'C4 Launching Gantries Active',
+          value: '18 / 18 Rigs',
+          target: '18 Dedicated Gantries',
+          progressPercent: 1.0,
+          color: Color(0xFF10B981),
+          icon: Icons.precision_manufacturing_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Pier Foundation Concrete Cast',
+          value: '99.4%',
+          target: '100% C70 High Performance',
+          progressPercent: 0.994,
+          color: Color(0xFFF59E0B),
+          icon: Icons.foundation_rounded,
+        ),
+      ],
+      sensors: const [
+        SensorWeightConfig(
+          name: 'Satellite Persistent Scatterer (PS-InSAR)',
+          code: 'SAT_PS_INSAR',
+          weight: 0.35,
+          isApplicable: true,
+          status: 'ONLINE (0.1 mm/yr)',
+          lastTelemetry: 'Sub-millimeter viaduct pier settlement stability verified',
+          icon: Icons.satellite_alt_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Drone High-Precision Photogrammetry',
+          code: 'DRONE_SURVEY',
+          weight: 0.25,
+          isApplicable: true,
+          status: 'ACTIVE FLIGHT',
+          lastTelemetry: 'Pier P-842 verticality deviation 0.08° within Japanese tolerance',
+          icon: Icons.flight_takeoff_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'IoT Wireless Strain Gauge & Accelerometers',
+          code: 'IOT_STRUCTURAL',
+          weight: 0.20,
+          isApplicable: true,
+          status: 'LIVE (0.015 g)',
+          lastTelemetry: 'Span 144 post-tensioned tendon stress 1,420 MPa verified',
+          icon: Icons.sensors_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Gantry Launching Log & Batching Plant',
+          code: 'GANTRY_TALLY',
+          weight: 0.15,
+          isApplicable: true,
+          status: 'VERIFIED',
+          lastTelemetry: 'Span girder 975t erected in 4.2 hours at Anand package',
+          icon: Icons.check_circle_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Primavera P6 Master Track WBS',
+          code: 'P6_SCHEDULE',
+          weight: 0.05,
+          isApplicable: true,
+          status: 'ON TRACK (SPI 1.06)',
+          lastTelemetry: '350 km/h slab track laying milestone on schedule',
+          icon: Icons.calendar_month_rounded,
+        ),
+      ],
+      stories: const [
+        ArchetypeStoryItem(
+          title: 'PS-InSAR',
+          metric: '0.1mm Steady',
+          icon: Icons.satellite_alt_rounded,
+          color: Color(0xFF38BDF8),
+          details: 'Interferometric radar confirms zero structural settlement along 508 km piers.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Gantry Rig',
+          metric: '18 Active',
+          icon: Icons.precision_manufacturing_rounded,
+          color: Color(0xFF10B981),
+          details: 'Full-span launching gantries erecting 40m precast box girders simultaneously.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Track Align',
+          metric: '0.2 mm',
+          icon: Icons.straighten_rounded,
+          color: Color(0xFF00E5FF),
+          details: 'Laser railway track geometry trolley certified for 350 km/h Shinkansen travel.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Concrete C70',
+          metric: '100% Passed',
+          icon: Icons.foundation_rounded,
+          color: Color(0xFFFFB95F),
+          details: 'Compressive cube strength tests exceeded 78 MPa at 28-day break tests.',
+        ),
+      ],
+    ),
+
+    // 4. Metro Underground TBM Tunnel & Stations (Subterranean)
+    ProjectArchetype(
+      id: 'metro_tbm_subterranean',
+      name: 'Metro Underground TBM Tunnel & Underground Stations',
+      shortName: 'Underground TBM Metro',
+      client: 'Delhi Metro Rail Corporation (DMRC)',
+      location: 'Phase-IV Corridor • Underground Cavern C-02',
+      scale: 'Mega (₹16,500 Cr)',
+      budget: '₹ 16,500 Cr',
+      contractModel: 'NEC4 Option C Target Contract with Pain/Gain',
+      typology: ProjectTypology.subterraneanTbm,
+      domain: 'Transport & Heavy Civil',
+      standards: ['BS 6164 Safety', 'ITA Guidelines', 'EN 16191 TBM', 'OISD/NFPA 130'],
+      accentColor: const Color(0xFFA855F7),
+      icon: Icons.subway_rounded,
+      verifiedConsensus: 99.1,
+      primaryChainageOrWbs: 'TBM-01 "Sudharshan" / Ring 6,420',
+      physicalUnit: 'Precast Rings Built',
+      kpis: const [
+        ArchetypeKpi(
+          label: 'Precast Tunnel Rings Built',
+          value: '6,420 / 8,200',
+          target: '8,200 Rings',
+          progressPercent: 0.782,
+          color: Color(0xFFA855F7),
+          icon: Icons.donut_large_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Surface Ground Settlement',
+          value: '0.8 mm',
+          target: '≤ 5.0 mm Limit',
+          progressPercent: 0.970,
+          color: Color(0xFF10B981),
+          icon: Icons.arrow_downward_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'TBM Daily Advance Rate',
+          value: '14.2 m/day',
+          target: '12.0 m/day Target',
+          progressPercent: 1.0,
+          color: Color(0xFF10B981),
+          icon: Icons.speed_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Slurry Chamber Earth Pressure',
+          value: '2.4 bar',
+          target: '2.3 - 2.5 bar Setpoint',
+          progressPercent: 0.985,
+          color: Color(0xFFF59E0B),
+          icon: Icons.compress_rounded,
+        ),
+      ],
+      sensors: const [
+        SensorWeightConfig(
+          name: 'TBM Laser Gyro & Ring Telemetry',
+          code: 'TBM_GYRO',
+          weight: 0.40,
+          isApplicable: true,
+          status: 'ONLINE (Ring 6,420)',
+          lastTelemetry: 'TBM articulation roll 0.02° | Earth balance 2.4 bar maintained',
+          icon: Icons.compass_calibration_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Automated Total Station (ATS) Settlement Prisms',
+          code: 'ATS_SURFACE',
+          weight: 0.30,
+          isApplicable: true,
+          status: 'LIVE (0.8 mm)',
+          lastTelemetry: '420 surface monitoring prisms above heritage structures stable',
+          icon: Icons.straighten_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Indoor 360° SLAM LiDAR Walkthrough',
+          code: 'INDOOR_SLAM',
+          weight: 0.15,
+          isApplicable: true,
+          status: 'MAPPED',
+          lastTelemetry: 'Cartographer SLAM 3D mesh generated for Station Cavern Box 2',
+          icon: Icons.view_in_ar_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Daily Shift Muck Tally & Segment QC',
+          code: 'MUCK_TALLY',
+          weight: 0.10,
+          isApplicable: true,
+          status: 'VERIFIED',
+          lastTelemetry: '320 m³ excavated quartzite muck logged and weighed',
+          icon: Icons.inventory_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Satellite SAR (Interferometry on Surface)',
+          code: 'SAT_SAR',
+          weight: 0.05,
+          isApplicable: true,
+          status: 'SURFACE ONLY',
+          lastTelemetry: 'Surface deformation map shows zero anomaly along alignment',
+          icon: Icons.satellite_alt_rounded,
+        ),
+      ],
+      stories: const [
+        ArchetypeStoryItem(
+          title: 'TBM Gyro',
+          metric: 'Ring 6,420',
+          icon: Icons.compass_calibration_rounded,
+          color: Color(0xFFA855F7),
+          details: 'Slurry pressure balanced at 2.4 bar with zero over-excavation.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Settlement',
+          metric: '0.8 mm Safe',
+          icon: Icons.arrow_downward_rounded,
+          color: Color(0xFF10B981),
+          details: 'Total station prisms confirm building foundations undisturbed above tunnel.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Indoor SLAM',
+          metric: 'Cavern Mapped',
+          icon: Icons.view_in_ar_rounded,
+          color: Color(0xFF00E5FF),
+          details: '360° LiDAR helmet scans matched against structural AFC drawings.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Grout Pressure',
+          metric: '4.2 bar Hold',
+          icon: Icons.donut_large_rounded,
+          color: Color(0xFFFFB95F),
+          details: 'Two-component tail skin grouting verified 100% annular void filling.',
+        ),
+      ],
+    ),
+
+    // 5. World-Scale LNG Liquefaction Terminal (Industrial Nodal)
+    ProjectArchetype(
+      id: 'lng_petrochem_terminal',
+      name: 'World-Scale LNG Liquefaction & Regasification Terminal',
+      shortName: 'LNG Export Terminal',
+      client: 'Petronet LNG / GAIL India',
+      location: 'Dahej Marine Terminal, Gulf of Khambhat, Gujarat',
+      scale: 'Mega (>₹28,400 Cr)',
+      budget: '₹ 28,400 Cr',
+      contractModel: 'EPC Lump Sum Turnkey (LSTK) Multi-Discipline',
+      typology: ProjectTypology.industrialNodal,
+      domain: 'Hydrocarbons & Petrochemicals',
+      standards: ['ASME B31.3 Cryogenic', 'NFPA 59A', 'EN 1473 LNG', 'API 620 Tank'],
+      accentColor: const Color(0xFF10B981),
+      icon: Icons.factory_rounded,
+      verifiedConsensus: 99.5,
+      primaryChainageOrWbs: 'Cryogenic Train-3 / Tank TK-04',
+      physicalUnit: 'Metric Tons Steel & Piping',
+      kpis: const [
+        ArchetypeKpi(
+          label: 'Cryogenic 9% Nickel Tank TK-04',
+          value: '180,000 m³',
+          target: '180,000 m³ Complete',
+          progressPercent: 0.942,
+          color: Color(0xFF10B981),
+          icon: Icons.storage_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Cryo-Metallurgy Piping Weld NDT',
+          value: '99.9%',
+          target: '100% 100% RT / UT Pass',
+          progressPercent: 0.999,
+          color: Color(0xFF0284C7),
+          icon: Icons.biotech_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Marine Jetty Dredging Bathymetry',
+          value: '-16.5 m CD',
+          target: '-16.0 m Chart Datum',
+          progressPercent: 1.0,
+          color: Color(0xFF10B981),
+          icon: Icons.water_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Heavy Lift Modules Erected',
+          value: '42 / 44 Modules',
+          target: '44 Heavy Lifts',
+          progressPercent: 0.954,
+          color: Color(0xFFF59E0B),
+          icon: Icons.precision_manufacturing_rounded,
+        ),
+      ],
+      sensors: const [
+        SensorWeightConfig(
+          name: 'BIM 4D/5D WebGL Model Link',
+          code: 'BIM_4D',
+          weight: 0.35,
+          isApplicable: true,
+          status: 'ONLINE (IFC Shaded)',
+          lastTelemetry: '42,000 piping spools matched with P6 activities via IFC GUIDs',
+          icon: Icons.account_tree_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Indoor 360° Helmet Vision (OpenSpace)',
+          code: 'INDOOR_VISION',
+          weight: 0.25,
+          isApplicable: true,
+          status: 'ACTIVE WALK',
+          lastTelemetry: 'AI computer vision detected 100% valve actuator tagging completed',
+          icon: Icons.videocam_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Marine Multibeam Sonar (MBES)',
+          code: 'MARINE_MBES',
+          weight: 0.20,
+          isApplicable: true,
+          status: 'BATHYMETRY VERIFIED',
+          lastTelemetry: 'Jetty berth channel depth -16.5m cleared for Q-Flex LNG carriers',
+          icon: Icons.waves_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Digital Radiography (DR) Welder Tally',
+          code: 'DR_TALLY',
+          weight: 0.15,
+          isApplicable: true,
+          status: 'VERIFIED',
+          lastTelemetry: 'Zero defect in 9% Ni alloy cryogenic welds at -162°C service',
+          icon: Icons.verified_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Primavera P6 Commissioning WBS',
+          code: 'P6_SCHEDULE',
+          weight: 0.05,
+          isApplicable: true,
+          status: 'ON TRACK (SPI 1.05)',
+          lastTelemetry: 'Cold box nitrogen purging milestone ahead by 8 days',
+          icon: Icons.calendar_month_rounded,
+        ),
+      ],
+      stories: const [
+        ArchetypeStoryItem(
+          title: 'BIM 4D IFC',
+          metric: '42K Spools',
+          icon: Icons.account_tree_rounded,
+          color: Color(0xFF10B981),
+          details: '3D IFC digital twin shaded green across cryogenic piping trains.',
+        ),
+        ArchetypeStoryItem(
+          title: '9% Ni Tank',
+          metric: '180K m³',
+          icon: Icons.storage_rounded,
+          color: Color(0xFF0284C7),
+          details: 'Inner cryogenic container successfully passed hydrostatic load testing.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Sonar Bathy',
+          metric: '-16.5m CD',
+          icon: Icons.waves_rounded,
+          color: Color(0xFF00E5FF),
+          details: 'Jetty marine channel surveyed and certified for international LNG fleet.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Gemini FIDIC',
+          metric: 'Claim Shield',
+          icon: Icons.gavel_rounded,
+          color: Color(0xFFFFB95F),
+          details: 'Automated monsoon weather logs protected contractor against delay damages.',
+        ),
+      ],
+    ),
+
+    // 6. 100 MW Hyper-Scale Data Center Campus (High-Density MEP / BIM 4D)
+    ProjectArchetype(
+      id: 'datacenter_hyperscale',
+      name: '100 MW Hyper-Scale Mission-Critical Data Center Campus',
+      shortName: '100 MW Data Center',
+      client: 'Adani ConneX / AWS Global Cloud',
+      location: 'Noida Data Center Cluster • Building DC-01',
+      scale: 'Large (₹2,400 Cr)',
+      budget: '₹ 2,400 Cr',
+      contractModel: 'Design-Build Fast-Track with Guaranteed Maximum Price',
+      typology: ProjectTypology.highDensityBim,
+      domain: 'Urban Infrastructure & Digital',
+      standards: ['Tier-IV Uptime Institute', 'ASHRAE TC 9.9', 'NFPA 75/76', 'LEED Platinum'],
+      accentColor: const Color(0xFF00E5FF),
+      icon: Icons.dns_rounded,
+      verifiedConsensus: 99.3,
+      primaryChainageOrWbs: 'Server Hall 04 / Dual 220kV Bay',
+      physicalUnit: 'MW Power & Cooling Ready',
+      kpis: const [
+        ArchetypeKpi(
+          label: 'Power Delivery Commissioned',
+          value: '84 / 100 MW',
+          target: '100 MW Tier-IV 2N',
+          progressPercent: 0.840,
+          color: Color(0xFF00E5FF),
+          icon: Icons.electric_bolt_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Chilled Water Loop Pressure Hold',
+          value: '16.2 bar',
+          target: '16.0 bar Hold',
+          progressPercent: 1.0,
+          color: Color(0xFF10B981),
+          icon: Icons.water_drop_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'BIM MEP Clash Resolution',
+          value: '0 Clashes',
+          target: 'Zero Tolerated',
+          progressPercent: 1.0,
+          color: Color(0xFF10B981),
+          icon: Icons.check_circle_outline_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Diesel Generator Backup Sync',
+          value: '48 / 48 DG Sets',
+          target: '48 Sets Integrated',
+          progressPercent: 1.0,
+          color: Color(0xFFF59E0B),
+          icon: Icons.power_settings_new_rounded,
+        ),
+      ],
+      sensors: const [
+        SensorWeightConfig(
+          name: 'BIM 4D/5D WebGL Model Link',
+          code: 'BIM_4D',
+          weight: 0.40,
+          isApplicable: true,
+          status: 'ONLINE (IFC Shaded)',
+          lastTelemetry: 'Revit / Navisworks MEP models 100% clash-free on Level 2 & 3',
+          icon: Icons.domain_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Indoor 360° LiDAR & Thermal Vision',
+          code: 'INDOOR_VISION',
+          weight: 0.30,
+          isApplicable: true,
+          status: 'ACTIVE SCAN',
+          lastTelemetry: 'Busduct joint thermography verified zero loose connections',
+          icon: Icons.qr_code_scanner_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'SCADA BMS & Power Quality Analyzer',
+          code: 'SCADA_BMS',
+          weight: 0.20,
+          isApplicable: true,
+          status: 'LIVE (84 MW)',
+          lastTelemetry: 'Harmonic distortion THD < 2.1% across dual UPS feeds',
+          icon: Icons.speed_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Daily Last Planner (LPS) Percent Plan Complete',
+          code: 'LPS_TALLY',
+          weight: 0.10,
+          isApplicable: true,
+          status: 'PPC 94.2%',
+          lastTelemetry: '42 trades cleared 6-gate constraint readiness check today',
+          icon: Icons.checklist_rounded,
+        ),
+      ],
+      stories: const [
+        ArchetypeStoryItem(
+          title: 'BIM 4D MEP',
+          metric: 'Zero Clash',
+          icon: Icons.domain_rounded,
+          color: Color(0xFF00E5FF),
+          details: 'All cable trays, chilled water pipes, and smoke ducts coordinated.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Tier-IV 2N',
+          metric: '84 MW Ready',
+          icon: Icons.electric_bolt_rounded,
+          color: Color(0xFF10B981),
+          details: 'Dual 220kV substation bays and 48 backup diesel generators synchronized.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Chilled Water',
+          metric: '16.2 bar',
+          icon: Icons.water_drop_rounded,
+          color: Color(0xFF0284C7),
+          details: 'Hyperscale cooling loops charged with adiabatic free-cooling chillers.',
+        ),
+        ArchetypeStoryItem(
+          title: 'LPS Weekly',
+          metric: '94% PPC',
+          icon: Icons.checklist_rounded,
+          color: Color(0xFFFFB95F),
+          details: 'Last Planner 3-week lookahead tracking milestone signoffs flawlessly.',
+        ),
+      ],
+    ),
+
+    // 7. 5,000 Telecom 5G Tower Rollout (Hyper-Distributed)
+    ProjectArchetype(
+      id: 'telecom_5g_rollout',
+      name: '5,000 Telecom 5G Tower Rollout & Fiber Backhaul',
+      shortName: '5,000 5G Towers',
+      client: 'Bharti Airtel / Indus Towers',
+      location: 'Pan-India Circle 4 • 5,000 Micro-Sites',
+      scale: 'Medium (₹850 Cr)',
+      budget: '₹ 850 Cr',
+      contractModel: 'Milestone Unit Rate Performance Contract',
+      typology: ProjectTypology.hyperDistributed,
+      domain: 'Distributed & Fast-Track',
+      standards: ['3GPP Release 16', 'DoT SACFA Norms', 'TEC Structural Norms', 'OFC ITU-T'],
+      accentColor: const Color(0xFFEC4899),
+      icon: Icons.cell_tower_rounded,
+      verifiedConsensus: 98.9,
+      primaryChainageOrWbs: 'Site ID DL-4821 / 5,000 Macro Sites',
+      physicalUnit: 'Towers Commissioned',
+      kpis: const [
+        ArchetypeKpi(
+          label: '5G Radio Nodes Radiating',
+          value: '4,120 / 5,000',
+          target: '5,000 Sites Live',
+          progressPercent: 0.824,
+          color: Color(0xFFEC4899),
+          icon: Icons.cell_tower_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'OFC Fiber Backhaul Lit Up',
+          value: '3,840 Sites',
+          target: '5,000 Sites Dark Fiber',
+          progressPercent: 0.768,
+          color: Color(0xFF10B981),
+          icon: Icons.cable_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'SACFA Regulatory Clearance',
+          value: '100% Passed',
+          target: '100% Approved',
+          progressPercent: 1.0,
+          color: Color(0xFF0284C7),
+          icon: Icons.verified_user_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Lithium Battery Backup Bank',
+          value: '4,120 / 4,120',
+          target: '100% 4h Backup',
+          progressPercent: 1.0,
+          color: Color(0xFFF59E0B),
+          icon: Icons.battery_saver_rounded,
+        ),
+      ],
+      sensors: const [
+        SensorWeightConfig(
+          name: 'Mobile App Geo-Fenced Technician Clock-In',
+          code: 'GEO_MOBILE',
+          weight: 0.40,
+          isApplicable: true,
+          status: 'ONLINE (4,120 Sites)',
+          lastTelemetry: 'GPS timestamped antenna azimuth & tilt verified at Site DL-4821',
+          icon: Icons.location_on_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'IoT Tower Smart Energy & Battery Controller',
+          code: 'IOT_TOWER',
+          weight: 0.30,
+          isApplicable: true,
+          status: 'LIVE (48V / 98% SoC)',
+          lastTelemetry: 'SMPS telemetry logs active DC draw and AC grid availability',
+          icon: Icons.sensors_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Satellite SAR & High-Res Optical Imagery',
+          code: 'SAT_OPTICAL',
+          weight: 0.15,
+          isApplicable: true,
+          status: 'MATCHED',
+          lastTelemetry: 'Tower shadow and structural lattice verified via 0.3m optical pass',
+          icon: Icons.satellite_alt_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Optical Time Domain Reflectometer (OTDR)',
+          code: 'OTDR_FIBER',
+          weight: 0.15,
+          isApplicable: true,
+          status: '0.18 dB/km LOSS',
+          lastTelemetry: 'Fiber backbone loss within ITU-T G.652 standards across all rings',
+          icon: Icons.cable_rounded,
+        ),
+      ],
+      stories: const [
+        ArchetypeStoryItem(
+          title: '5G Radiating',
+          metric: '4,120 Sites',
+          icon: Icons.cell_tower_rounded,
+          color: Color(0xFFEC4899),
+          details: 'Massive MIMO 64T64R antennas radiating live traffic across NCR and Punjab.',
+        ),
+        ArchetypeStoryItem(
+          title: 'OFC Ring',
+          metric: '0.18 dB/km',
+          icon: Icons.cable_rounded,
+          color: Color(0xFF10B981),
+          details: 'Underground optical fiber loops verified with zero splices exceeding limits.',
+        ),
+        ArchetypeStoryItem(
+          title: 'SACFA Clear',
+          metric: '100% Legal',
+          icon: Icons.verified_user_rounded,
+          color: Color(0xFF0284C7),
+          details: 'Department of Telecommunications spectrum and height clearances notarized.',
+        ),
+      ],
+    ),
+
+    // 8. 35-Day Petrochemical Plant Turnaround (Hour-by-Hour Fast-Track)
+    ProjectArchetype(
+      id: 'refinery_turnaround_tar',
+      name: '35-Day Refinery Hydrocracker Turnaround (TAR) & Overhaul',
+      shortName: '35-Day Refinery TAR',
+      client: 'Indian Oil Corporation Ltd (IOCL)',
+      location: 'Paradip Refinery • Hydrocracker Unit 01',
+      scale: 'Fast-Track (₹175 Cr)',
+      budget: '₹ 175 Cr',
+      contractModel: 'Time & Material with Hourly Milestone Incentive',
+      typology: ProjectTypology.hourByHourTurnaround,
+      domain: 'Turnarounds & Maintenance',
+      standards: ['API 510 Vessel', 'API 570 Piping', 'OISD-105 Work Permit', 'NFPA 51B'],
+      accentColor: const Color(0xFFEF4444),
+      icon: Icons.build_circle_rounded,
+      verifiedConsensus: 99.7,
+      primaryChainageOrWbs: 'Hour 412 / 840 Hours Total (Day 18)',
+      physicalUnit: 'Tasks Completed',
+      kpis: const [
+        ArchetypeKpi(
+          label: 'Critical Path Tasks Done',
+          value: '8,420 / 12,000',
+          target: '12,000 TAR Tasks',
+          progressPercent: 0.701,
+          color: Color(0xFFEF4444),
+          icon: Icons.alarm_on_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Hydrocracker Catalyst Unloaded',
+          value: '100% Safe',
+          target: 'Under Inert Nitrogen',
+          progressPercent: 1.0,
+          color: Color(0xFF10B981),
+          icon: Icons.science_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Live PTW Hot Work Gas Safety',
+          value: '0% LEL Safe',
+          target: 'Zero Gas Tolerance',
+          progressPercent: 1.0,
+          color: Color(0xFF10B981),
+          icon: Icons.shield_rounded,
+        ),
+        ArchetypeKpi(
+          label: 'Safety Incident Rate (TRIR)',
+          value: '0.00 TRIR',
+          target: 'Zero Incident Goal',
+          progressPercent: 1.0,
+          color: Color(0xFF0284C7),
+          icon: Icons.health_and_safety_rounded,
+        ),
+      ],
+      sensors: const [
+        SensorWeightConfig(
+          name: 'Live PTW & Gas Detector IoT Badges',
+          code: 'PTW_GAS',
+          weight: 0.40,
+          isApplicable: true,
+          status: 'LIVE (0% LEL)',
+          lastTelemetry: '1,840 confined space workers monitored with wireless LEL detectors',
+          icon: Icons.health_and_safety_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'RFID Tool & Flange Blind Tagging',
+          code: 'RFID_FLANGE',
+          weight: 0.30,
+          isApplicable: true,
+          status: '100% DE-BLINDED',
+          lastTelemetry: '342 spade blinds verified with torque wrench certificate barcodes',
+          icon: Icons.tag_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Hourly Shift DPR & Welder Radiography',
+          code: 'HOURLY_DPR',
+          weight: 0.20,
+          isApplicable: true,
+          status: 'VERIFIED',
+          lastTelemetry: 'Reactor internal tray replacement completed 4 hours ahead of schedule',
+          icon: Icons.punch_clock_rounded,
+        ),
+        SensorWeightConfig(
+          name: 'Primavera P6 Hourly Shift Schedule',
+          code: 'P6_HOURLY',
+          weight: 0.10,
+          isApplicable: true,
+          status: 'SPI 1.08 (Ahead)',
+          lastTelemetry: 'Shift 36 handover logged with zero open punchlist items',
+          icon: Icons.schedule_rounded,
+        ),
+      ],
+      stories: const [
+        ArchetypeStoryItem(
+          title: 'Hourly TAR',
+          metric: 'Hour 412/840',
+          icon: Icons.alarm_on_rounded,
+          color: Color(0xFFEF4444),
+          details: 'Overhaul operating 4 hours ahead of critical path schedule.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Catalyst Bed',
+          metric: '100% Dumped',
+          icon: Icons.science_rounded,
+          color: Color(0xFF10B981),
+          details: 'Spent catalyst extracted safely under closed-loop nitrogen purge.',
+        ),
+        ArchetypeStoryItem(
+          title: 'PTW Zero Gas',
+          metric: '0% LEL',
+          icon: Icons.shield_rounded,
+          color: Color(0xFF0284C7),
+          details: 'Continuous hydrocarbon sniffing sensors active across all column entries.',
+        ),
+        ArchetypeStoryItem(
+          title: 'Flange Torque',
+          metric: '342/342 Pass',
+          icon: Icons.tag_rounded,
+          color: Color(0xFFFFB95F),
+          details: 'Hydraulic torque bolt tensioning recorded digitally with calibrated logs.',
+        ),
+      ],
+    ),
+  ];
+
+  static ProjectArchetype get defaultArchetype => allArchetypes.first;
+
+  static ProjectArchetype getById(String id) {
+    return allArchetypes.firstWhere(
+      (a) => a.id == id,
+      orElse: () => allArchetypes.first,
+    );
+  }
+}

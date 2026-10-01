@@ -75,6 +75,11 @@ import '../safety/carbon_credits_screen.dart';
 import '../engineering/thrust_block_design_screen.dart';
 import '../operations/rtu_solar_microgrid_screen.dart';
 import '../quality/api6d_valve_fat_screen.dart';
+import '../truth/universal_truth_engine_screen.dart';
+import '../lean/last_planner_lookahead_screen.dart';
+import '../bim/bim_4d_viewer_screen.dart';
+import '../logistics/global_supply_chain_screen.dart';
+import '../contracts/fidic_claim_shield_screen.dart';
 
 class _MenuItemConfig {
   final String label;
@@ -108,6 +113,56 @@ class _MoreScreenState extends State<MoreScreen> {
   String _selectedCategory = 'ALL';
 
   static const List<_MenuItemConfig> _allMenuItems = [
+    // Universal Multi-Environment Truth Triangulator
+    _MenuItemConfig(
+      label: 'Universal Truth Engine',
+      subtitle: 'Corridor, Subterranean TBM, Indoor SLAM & Marine Bathymetry',
+      category: 'Intelligence',
+      icon: Icons.verified_user_rounded,
+      color: Color(0xFF10B981),
+      screen: UniversalTruthEngineScreen(),
+      badge: 'UNIVERSAL',
+    ),
+    // Lean Construction Last Planner System (LPS)
+    _MenuItemConfig(
+      label: 'Lean Last Planner (LPS)',
+      subtitle: '3-Week rolling lookahead & 6-gate constraint clearance',
+      category: 'Field & Operations',
+      icon: Icons.checklist_rtl_rounded,
+      color: Color(0xFF38BDF8),
+      screen: LastPlannerLookaheadScreen(),
+      badge: 'LEAN PPC',
+    ),
+    // Open-BIM 4D/5D Digital Twin Model Inspector
+    _MenuItemConfig(
+      label: 'Open-BIM 4D Twin',
+      subtitle: 'IFC.js 3D WebGL element tree & P6 schedule timeline',
+      category: 'Field & Operations',
+      icon: Icons.view_in_ar_rounded,
+      color: Color(0xFF00E5FF),
+      screen: Bim4dViewerScreen(),
+      badge: 'IFC 4D',
+    ),
+    // Global Long-Lead Equipment & Critical Metallurgy Twin
+    _MenuItemConfig(
+      label: 'Global Supply Chain',
+      subtitle: 'Mill rolling, FAT, AIS vessel tracking & port customs',
+      category: 'Governance',
+      icon: Icons.directions_boat_rounded,
+      color: Color(0xFFFFB95F),
+      screen: GlobalSupplyChainScreen(),
+      badge: 'AIS SHIP',
+    ),
+    // Automated FIDIC & NEC4 Dispute Defense and Claim Shield
+    _MenuItemConfig(
+      label: 'FIDIC Dispute Shield',
+      subtitle: 'Clause 8.4 EoT claims, weather notarization & TIA defense',
+      category: 'Governance',
+      icon: Icons.gavel_rounded,
+      color: Color(0xFFEC4899),
+      screen: FidicClaimShieldScreen(),
+      badge: 'CL. 8.4',
+    ),
     // Valve Station SCADA & Remote Telemetry
     _MenuItemConfig(
       label: 'SCADA Telemetry',

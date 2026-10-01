@@ -24,6 +24,13 @@ import 'package:nirmaan_app/screens/quality/golden_weld_certification_screen.dar
 import 'package:nirmaan_app/screens/audit/audit_screen.dart';
 import 'package:nirmaan_app/screens/settings/settings_screen.dart';
 import 'package:nirmaan_app/screens/more/more_screen.dart';
+import 'package:nirmaan_app/core/taxonomy/project_archetype.dart';
+import 'package:nirmaan_app/core/taxonomy/archetype_controller.dart';
+import 'package:nirmaan_app/screens/truth/universal_truth_engine_screen.dart';
+import 'package:nirmaan_app/screens/lean/last_planner_lookahead_screen.dart';
+import 'package:nirmaan_app/screens/bim/bim_4d_viewer_screen.dart';
+import 'package:nirmaan_app/screens/logistics/global_supply_chain_screen.dart';
+import 'package:nirmaan_app/screens/contracts/fidic_claim_shield_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -38,13 +45,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    ArchetypeController.instance.addListener(_onArchetypeChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AppProvider>().loadInitialData();
     });
   }
 
+  void _onArchetypeChanged() {
+    if (mounted) setState(() {});
+  }
+
   @override
   void dispose() {
+    ArchetypeController.instance.removeListener(_onArchetypeChanged);
     _searchController.dispose();
     super.dispose();
   }
@@ -179,71 +192,85 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // TOP BRANDING & LOCATION ROW (Blinkit / Amazon style)
   // ===========================================================================
   Widget _buildTopBrandingRow(BuildContext context, ProjectModel? project) {
+    final arch = ArchetypeController.instance.current;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0284C7).withValues(alpha: 0.18),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: const Color(0xFF0284C7).withValues(alpha: 0.4)),
+          child: InkWell(
+            onTap: () => _showArchetypeSelectorModal(context),
+            borderRadius: BorderRadius.circular(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: arch.accentColor.withValues(alpha: 0.18),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: arch.accentColor.withValues(alpha: 0.4)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(arch.icon, size: 12, color: arch.accentColor),
+                          const SizedBox(width: 4),
+                          Text(
+                            arch.client.toUpperCase(),
+                            style: TextStyle(
+                              color: arch.accentColor,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                          const SizedBox(width: 2),
+                          const Icon(Icons.arrow_drop_down, size: 14, color: Color(0xFF94A3B8)),
+                        ],
+                      ),
                     ),
-                    child: const Text(
-                      'OIL INDIA LIMITED',
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 7,
+                      height: 7,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF10B981),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Text(
+                      'LIVE CLOUD',
                       style: TextStyle(
-                        color: Color(0xFF38BDF8),
+                        color: Color(0xFF10B981),
                         fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.8,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    width: 7,
-                    height: 7,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF10B981),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  const Text(
-                    'LIVE CLOUD',
-                    style: TextStyle(
-                      color: Color(0xFF10B981),
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  const Icon(Icons.location_on_rounded, size: 14, color: Color(0xFF94A3B8)),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      project?.location ?? 'Duliajan-Numaligarh Crude Trunk • KM 142.8',
-                      style: const TextStyle(
-                        color: Color(0xFFF1F5F9),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    const Icon(Icons.location_on_rounded, size: 14, color: Color(0xFF94A3B8)),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        arch.location,
+                        style: const TextStyle(
+                          color: Color(0xFFF1F5F9),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         Row(
@@ -386,7 +413,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // INSTAGRAM-STYLE "LIVE SITE ASSET STORIES"
   // ===========================================================================
   Widget _buildLiveStoriesRow(BuildContext context) {
+    final arch = ArchetypeController.instance.current;
     final stories = [
+      _StoryItem(
+        title: 'Universal Truth',
+        badge: '${arch.verifiedConsensus}%',
+        icon: Icons.verified_user_rounded,
+        ringColor: const Color(0xFF10B981),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UniversalTruthEngineScreen())),
+      ),
+      _StoryItem(
+        title: 'Lean LPS',
+        badge: '94% PPC',
+        icon: Icons.checklist_rtl_rounded,
+        ringColor: const Color(0xFF38BDF8),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LastPlannerLookaheadScreen())),
+      ),
+      _StoryItem(
+        title: 'BIM 4D Twin',
+        badge: 'IFC 3D',
+        icon: Icons.view_in_ar_rounded,
+        ringColor: const Color(0xFF00E5FF),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Bim4dViewerScreen())),
+      ),
+      _StoryItem(
+        title: 'Global Supply',
+        badge: 'AIS Ship',
+        icon: Icons.directions_boat_rounded,
+        ringColor: const Color(0xFFFFB95F),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GlobalSupplyChainScreen())),
+      ),
+      _StoryItem(
+        title: 'FIDIC Shield',
+        badge: 'Cl. 8.4',
+        icon: Icons.gavel_rounded,
+        ringColor: const Color(0xFFEC4899),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FidicClaimShieldScreen())),
+      ),
       _StoryItem(
         title: 'Satellite SAR',
         badge: '99.8%',
@@ -431,17 +494,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       _StoryItem(
         title: 'Gemini AI',
-        badge: 'Ready',
-        icon: Icons.auto_awesome_rounded,
+        badge: '2.5 Flash',
+        icon: Icons.psychology_rounded,
         ringColor: const Color(0xFFA855F7),
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GeminiBrainScreen())),
-      ),
-      _StoryItem(
-        title: 'Heat Tally',
-        badge: 'X70',
-        icon: Icons.qr_code_scanner_rounded,
-        ringColor: const Color(0xFF0284C7),
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PipeHeatTallyScreen())),
       ),
     ];
 
@@ -534,27 +590,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // HERO TRUTH TRIANGULATION CONSENSUS BANNER
   // ===========================================================================
   Widget _buildTruthTriangulationBanner(BuildContext context) {
+    final arch = ArchetypeController.instance.current;
     return InkWell(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const ConflictsScreen()),
+          MaterialPageRoute(builder: (_) => const UniversalTruthEngineScreen()),
         );
       },
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF0F2B48), Color(0xFF111C38)],
+          gradient: LinearGradient(
+            colors: [arch.accentColor.withValues(alpha: 0.25), const Color(0xFF111C38)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF0284C7).withValues(alpha: 0.5), width: 1.2),
+          border: Border.all(color: arch.accentColor.withValues(alpha: 0.5), width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF0284C7).withValues(alpha: 0.15),
+              color: arch.accentColor.withValues(alpha: 0.15),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -578,7 +635,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     const SizedBox(width: 8),
                     const Text(
-                      '5-Factor Truth Triangulation',
+                      'Universal Truth Triangulation',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 14,
@@ -593,9 +650,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     color: const Color(0xFF10B981),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Text(
-                    '99.4% CONSENSUS',
-                    style: TextStyle(
+                  child: Text(
+                    '${arch.verifiedConsensus}% CONSENSUS',
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: 10,
                       fontWeight: FontWeight.w900,
@@ -1270,6 +1327,158 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  void _showArchetypeSelectorModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF111C38),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.75,
+          maxChildSize: 0.9,
+          minChildSize: 0.5,
+          expand: false,
+          builder: (_, scrollController) {
+            return Column(
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF26396E),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0284C7).withValues(alpha: 0.25),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.public_rounded, color: Color(0xFF38BDF8), size: 20),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text(
+                              'Global Project Archetype',
+                              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              'Switch project class to re-tune telemetry, BIM & truth sensors',
+                              style: TextStyle(color: Color(0xFF94A3B8), fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(color: Color(0xFF1E2E5C), height: 1),
+                Expanded(
+                  child: ListView.builder(
+                    controller: scrollController,
+                    padding: const EdgeInsets.all(16),
+                    itemCount: ArchetypeController.instance.allArchetypes.length,
+                    itemBuilder: (context, index) {
+                      final arch = ArchetypeController.instance.allArchetypes[index];
+                      final isSelected = arch.id == ArchetypeController.instance.current.id;
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        decoration: BoxDecoration(
+                          color: isSelected ? arch.accentColor.withValues(alpha: 0.15) : const Color(0xFF162347),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isSelected ? arch.accentColor : const Color(0xFF1E2E5C),
+                            width: isSelected ? 1.5 : 1,
+                          ),
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                          leading: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: arch.accentColor.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: arch.accentColor.withValues(alpha: 0.5)),
+                            ),
+                            child: Icon(arch.icon, color: arch.accentColor, size: 22),
+                          ),
+                          title: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  arch.name,
+                                  style: TextStyle(
+                                    color: isSelected ? arch.accentColor : Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              if (isSelected)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: arch.accentColor,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: const Text(
+                                    'ACTIVE',
+                                    style: TextStyle(
+                                      color: Color(0xFF0B1326),
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 4),
+                              Text(
+                                '${arch.client} • ${arch.scale} (${arch.budget})',
+                                style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                arch.standards.join(' • '),
+                                style: const TextStyle(color: Color(0xFF64748B), fontSize: 10),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            ArchetypeController.instance.selectArchetypeDirect(arch);
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );

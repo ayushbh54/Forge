@@ -4,6 +4,7 @@ import 'package:nirmaan_app/providers/app_provider.dart';
 import 'package:nirmaan_app/screens/dashboard/dashboard_screen.dart';
 import 'package:nirmaan_app/screens/schedule/schedule_screen.dart';
 import 'package:nirmaan_app/screens/conflicts/conflicts_screen.dart';
+import 'package:nirmaan_app/screens/truth/universal_truth_engine_screen.dart';
 import 'package:nirmaan_app/screens/dpr/dpr_screen.dart';
 import 'package:nirmaan_app/screens/more/more_screen.dart';
 
@@ -21,7 +22,7 @@ class _AppShellState extends State<AppShell> {
   final List<Widget> _screens = const [
     DashboardScreen(),
     ScheduleScreen(),
-    ConflictsScreen(),
+    UniversalTruthEngineScreen(),
     DprScreen(),
     MoreScreen(),
   ];
