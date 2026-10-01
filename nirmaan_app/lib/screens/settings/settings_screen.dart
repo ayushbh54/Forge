@@ -14,6 +14,9 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   late final TextEditingController _urlController;
+  bool _isTestingConnection = false;
+  String? _connectionTestResult;
+  bool _connectionSuccess = false;
 
   @override
   void initState() {
@@ -99,7 +102,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 20),
 
               // Server Configuration Section
-              _buildSectionHeader('Server Configuration', Icons.dns_outlined),
+              _buildSectionHeader('Server Configuration & Diagnostics', Icons.dns_outlined),
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.all(16),
@@ -145,6 +148,115 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         provider.apiService.updateBaseUrl(val.trim());
                       },
                     ),
+                    const SizedBox(height: 12),
+                    const Text('Quick Environment Presets:', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        ActionChip(
+                          backgroundColor: const Color(0xFF111C38),
+                          side: const BorderSide(color: Color(0xFF0284C7)),
+                          label: const Text('Vercel Production', style: TextStyle(color: Color(0xFF38BDF8), fontSize: 12)),
+                          onPressed: () {
+                            _urlController.text = 'https://forge-tau-eight-89.vercel.app';
+                            provider.apiService.updateBaseUrl(_urlController.text);
+                          },
+                        ),
+                        ActionChip(
+                          backgroundColor: const Color(0xFF111C38),
+                          side: const BorderSide(color: Color(0xFF26396E)),
+                          label: const Text('Android 10.0.2.2', style: TextStyle(color: Color(0xFFF1F5F9), fontSize: 12)),
+                          onPressed: () {
+                            _urlController.text = 'http://10.0.2.2:3000';
+                            provider.apiService.updateBaseUrl(_urlController.text);
+                          },
+                        ),
+                        ActionChip(
+                          backgroundColor: const Color(0xFF111C38),
+                          side: const BorderSide(color: Color(0xFF26396E)),
+                          label: const Text('Localhost:3000', style: TextStyle(color: Color(0xFFF1F5F9), fontSize: 12)),
+                          onPressed: () {
+                            _urlController.text = 'http://localhost:3000';
+                            provider.apiService.updateBaseUrl(_urlController.text);
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        icon: _isTestingConnection
+                            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                            : const Icon(Icons.network_ping, size: 18),
+                        label: Text(_isTestingConnection ? 'Testing Connection...' : 'Test Connection & Ping Backend'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0284C7),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        onPressed: _isTestingConnection
+                            ? null
+                            : () async {
+                                setState(() {
+                                  _isTestingConnection = true;
+                                  _connectionTestResult = null;
+                                });
+                                final sw = Stopwatch()..start();
+                                try {
+                                  final res = await provider.apiService.getProjects();
+                                  sw.stop();
+                                  int count = 0;
+                                  if (res is Map && res['projects'] is List) {
+                                    count = (res['projects'] as List).length;
+                                  }
+                                  setState(() {
+                                    _isTestingConnection = false;
+                                    _connectionSuccess = true;
+                                    _connectionTestResult = 'Connected to server (${sw.elapsedMilliseconds}ms) - $count projects found';
+                                  });
+                                  await provider.loadProjects();
+                                } catch (e) {
+                                  sw.stop();
+                                  setState(() {
+                                    _isTestingConnection = false;
+                                    _connectionSuccess = false;
+                                    _connectionTestResult = 'Ping failed: ${e.toString().replaceAll('Exception:', '').trim()}';
+                                  });
+                                }
+                              },
+                      ),
+                    ),
+                    if (_connectionTestResult != null) ...[
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: _connectionSuccess ? const Color(0xFF4EDEA3).withValues(alpha: 0.1) : Colors.redAccent.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: _connectionSuccess ? const Color(0xFF4EDEA3) : Colors.redAccent),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(_connectionSuccess ? Icons.check_circle : Icons.error_outline,
+                                color: _connectionSuccess ? const Color(0xFF4EDEA3) : Colors.redAccent, size: 18),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _connectionTestResult!,
+                                style: TextStyle(
+                                  color: _connectionSuccess ? const Color(0xFF4EDEA3) : Colors.redAccent,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

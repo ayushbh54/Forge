@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../core/constants/app_constants.dart';
 
 class ApiService {
   String baseUrl;
@@ -13,7 +14,7 @@ class ApiService {
   static String get _defaultBaseUrl {
     const customUrl = String.fromEnvironment('API_URL');
     if (customUrl.isNotEmpty) return customUrl;
-    return 'https://forge-qo18.onrender.com';
+    return AppConstants.defaultApiBaseUrl;
   }
 
   void updateBaseUrl(String newUrl) {
@@ -26,7 +27,7 @@ class ApiService {
       final response = await http.get(
         Uri.parse('$baseUrl$endpoint'),
         headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 30));
+      ).timeout(const Duration(seconds: 8));
       return _processResponse(response);
     } catch (e) {
       throw Exception('GET $endpoint failed: $e');
@@ -39,7 +40,7 @@ class ApiService {
         Uri.parse('$baseUrl$endpoint'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(data),
-      ).timeout(const Duration(seconds: 30));
+      ).timeout(const Duration(seconds: 8));
       return _processResponse(response);
     } catch (e) {
       throw Exception('POST $endpoint failed: $e');
@@ -52,7 +53,7 @@ class ApiService {
         Uri.parse('$baseUrl$endpoint'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(data),
-      ).timeout(const Duration(seconds: 30));
+      ).timeout(const Duration(seconds: 8));
       return _processResponse(response);
     } catch (e) {
       throw Exception('PATCH $endpoint failed: $e');

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/app_provider.dart';
 
 class WorkforceScreen extends StatefulWidget {
   const WorkforceScreen({super.key});
@@ -63,10 +65,41 @@ class _WorkforceScreenState extends State<WorkforceScreen> {
     },
   ];
 
-  List<Map<String, dynamic>> get _filteredWorkers {
-    if (_searchQuery.trim().isEmpty) return _workers;
+  Color _getTradeColor(String trade) {
+    switch (trade.toUpperCase()) {
+      case 'WELDER': return Colors.orange;
+      case 'ELECTRICIAN': return Colors.blue;
+      case 'FITTER': return Colors.green;
+      case 'RIGGER': return Colors.purple;
+      case 'MASON': return Colors.teal;
+      default: return const Color(0xFF0284C7);
+    }
+  }
+
+  List<Map<String, dynamic>> _getAllWorkers(AppProvider provider) {
+    final list = List<Map<String, dynamic>>.from(_workers);
+    for (final w in provider.workers) {
+      final exists = list.any((item) => item['id'] == w.badgeNumber || item['id'] == w.id || item['name'] == w.name);
+      if (!exists) {
+        list.insert(0, {
+          'name': w.name,
+          'id': w.badgeNumber.isNotEmpty ? w.badgeNumber : w.id,
+          'trade': w.trade,
+          'color': _getTradeColor(w.trade),
+          'skills': w.skills,
+          'contractor': w.gang,
+          'present': w.attendanceStatus == 'VERIFIED_PRESENT',
+          'certExpired': false,
+        });
+      }
+    }
+    return list;
+  }
+
+  List<Map<String, dynamic>> _getFilteredWorkers(List<Map<String, dynamic>> all) {
+    if (_searchQuery.trim().isEmpty) return all;
     final query = _searchQuery.toLowerCase().trim();
-    return _workers.where((worker) {
+    return all.where((worker) {
       final name = (worker['name'] as String).toLowerCase();
       final id = (worker['id'] as String).toLowerCase();
       final trade = (worker['trade'] as String).toLowerCase();
@@ -77,8 +110,10 @@ class _WorkforceScreenState extends State<WorkforceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filtered = _filteredWorkers;
-    // Scaffold background: 0xFF0B1326
+    final provider = context.watch<AppProvider>();
+    final allWorkers = _getAllWorkers(provider);
+    final filtered = _getFilteredWorkers(allWorkers);
+
     return Scaffold(
       backgroundColor: const Color(0xFF0B1326),
       appBar: AppBar(
@@ -88,7 +123,7 @@ class _WorkforceScreenState extends State<WorkforceScreen> {
       ),
       body: Column(
         children: [
-          _buildStatsRow(),
+          _buildStatsRow(allWorkers),
           _buildSearchBar(),
           Expanded(
             child: ListView.builder(
@@ -102,9 +137,12 @@ class _WorkforceScreenState extends State<WorkforceScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigate to add worker
-          Navigator.pushNamed(context, '/add_worker');
+        onPressed: () async {
+          final provider = context.read<AppProvider>();
+          final res = await Navigator.pushNamed(context, '/add_worker');
+          if (res == true && mounted) {
+            provider.loadWorkers(silent: true);
+          }
         },
         backgroundColor: const Color(0xFF0284C7),
         child: const Icon(Icons.add, color: Color(0xFFF1F5F9)),
@@ -112,17 +150,23 @@ class _WorkforceScreenState extends State<WorkforceScreen> {
     );
   }
 
-  Widget _buildStatsRow() {
+  Widget _buildStatsRow(List<Map<String, dynamic>> allWorkers) {
+    final bool hasCustom = allWorkers.length > 5;
+    final int total = hasCustom ? allWorkers.length : 150;
+    final int present = hasCustom ? allWorkers.where((w) => w['present'] == true).length : 125;
+    final int absent = hasCustom ? (total - present) : 25;
+    final String rate = hasCustom && total > 0 ? '${((present / total) * 100).round()}%' : '83%';
+
     return Container(
       padding: const EdgeInsets.all(16),
       color: const Color(0xFF111C38),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildStatColumn('Total', '150', const Color(0xFFF1F5F9)),
-          _buildStatColumn('Present', '125', const Color(0xFF4EDEA3)),
-          _buildStatColumn('Absent', '25', Colors.redAccent),
-          _buildStatColumn('Rate', '83%', const Color(0xFF38BDF8)),
+          _buildStatColumn('Total', '$total', const Color(0xFFF1F5F9)),
+          _buildStatColumn('Present', '$present', const Color(0xFF4EDEA3)),
+          _buildStatColumn('Absent', '$absent', Colors.redAccent),
+          _buildStatColumn('Rate', rate, const Color(0xFF38BDF8)),
         ],
       ),
     );

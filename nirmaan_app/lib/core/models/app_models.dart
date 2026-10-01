@@ -256,6 +256,54 @@ class ActivityModel {
       supervisor: json['assignedSupervisor']?.toString() ?? json['assigned_supervisor']?.toString() ?? json['supervisor']?.toString() ?? 'Vikram Joshi',
     );
   }
+
+  ActivityModel copyWith({
+    String? id,
+    String? code,
+    String? uwid,
+    String? wbsCode,
+    String? name,
+    String? discipline,
+    DateTime? plannedStart,
+    DateTime? plannedFinish,
+    int? durationDays,
+    int? totalFloatDays,
+    bool? isCriticalPath,
+    double? plannedProgress,
+    double? contractorReportedProgress,
+    double? quantitySurveyProgress,
+    double? qcPassedProgress,
+    double? droneLidarProgress,
+    double? validatedConsensusProgress,
+    double? plannedQuantity,
+    double? installedQuantity,
+    String? unit,
+    String? supervisor,
+  }) {
+    return ActivityModel(
+      id: id ?? this.id,
+      code: code ?? this.code,
+      uwid: uwid ?? this.uwid,
+      wbsCode: wbsCode ?? this.wbsCode,
+      name: name ?? this.name,
+      discipline: discipline ?? this.discipline,
+      plannedStart: plannedStart ?? this.plannedStart,
+      plannedFinish: plannedFinish ?? this.plannedFinish,
+      durationDays: durationDays ?? this.durationDays,
+      totalFloatDays: totalFloatDays ?? this.totalFloatDays,
+      isCriticalPath: isCriticalPath ?? this.isCriticalPath,
+      plannedProgress: plannedProgress ?? this.plannedProgress,
+      contractorReportedProgress: contractorReportedProgress ?? this.contractorReportedProgress,
+      quantitySurveyProgress: quantitySurveyProgress ?? this.quantitySurveyProgress,
+      qcPassedProgress: qcPassedProgress ?? this.qcPassedProgress,
+      droneLidarProgress: droneLidarProgress ?? this.droneLidarProgress,
+      validatedConsensusProgress: validatedConsensusProgress ?? this.validatedConsensusProgress,
+      plannedQuantity: plannedQuantity ?? this.plannedQuantity,
+      installedQuantity: installedQuantity ?? this.installedQuantity,
+      unit: unit ?? this.unit,
+      supervisor: supervisor ?? this.supervisor,
+    );
+  }
 }
 
 class WorkerModel {
@@ -326,6 +374,38 @@ class WorkerModel {
       lastClockIn: json['lastClockIn']?.toString() ?? json['last_clock_in']?.toString() ?? 'Pending Clock-in',
       geofenceDistanceMeters: parseDouble(json['geofenceDistanceMeters'], 8.5),
       isAiSpoofProtected: json['isAiSpoofProtected'] != false,
+    );
+  }
+
+  WorkerModel copyWith({
+    String? id,
+    String? badgeNumber,
+    String? name,
+    String? trade,
+    List<String>? skills,
+    String? gang,
+    String? safetyCertExpiry,
+    String? attendanceStatus,
+    String? verificationMethod,
+    double? confidenceScore,
+    String? lastClockIn,
+    double? geofenceDistanceMeters,
+    bool? isAiSpoofProtected,
+  }) {
+    return WorkerModel(
+      id: id ?? this.id,
+      badgeNumber: badgeNumber ?? this.badgeNumber,
+      name: name ?? this.name,
+      trade: trade ?? this.trade,
+      skills: skills ?? this.skills,
+      gang: gang ?? this.gang,
+      safetyCertExpiry: safetyCertExpiry ?? this.safetyCertExpiry,
+      attendanceStatus: attendanceStatus ?? this.attendanceStatus,
+      verificationMethod: verificationMethod ?? this.verificationMethod,
+      confidenceScore: confidenceScore ?? this.confidenceScore,
+      lastClockIn: lastClockIn ?? this.lastClockIn,
+      geofenceDistanceMeters: geofenceDistanceMeters ?? this.geofenceDistanceMeters,
+      isAiSpoofProtected: isAiSpoofProtected ?? this.isAiSpoofProtected,
     );
   }
 }

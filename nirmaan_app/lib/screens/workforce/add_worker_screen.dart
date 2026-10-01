@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/app_provider.dart';
 
 class AddWorkerScreen extends StatefulWidget {
   const AddWorkerScreen({super.key});
@@ -9,13 +11,65 @@ class AddWorkerScreen extends StatefulWidget {
 
 class _AddWorkerScreenState extends State<AddWorkerScreen> {
   final _formKey = GlobalKey<FormState>();
-  String? _selectedTrade;
-  DateTime? _certExpiry;
+  String? _selectedTrade = 'WELDER';
+  DateTime? _certExpiry = DateTime.now().add(const Duration(days: 365));
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _badgeController = TextEditingController();
+  final TextEditingController _skillsController = TextEditingController();
+  final TextEditingController _contractorController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  bool _isSubmitting = false;
 
   final List<String> _trades = [
     'WELDER', 'FITTER', 'RIGGER', 'ELECTRICIAN',
     'PAINTER', 'CARPENTER', 'MASON', 'GENERAL_LABOUR'
   ];
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _badgeController.dispose();
+    _skillsController.dispose();
+    _contractorController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  void _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _isSubmitting = true);
+
+    final trade = _selectedTrade ?? 'GENERAL_LABOUR';
+    final workerData = <String, dynamic>{
+      'id': 'WRK-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
+      'name': _nameController.text.trim(),
+      'badgeNumber': _badgeController.text.trim(),
+      'trade': trade,
+      'skills': _skillsController.text.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList(),
+      'contractor': _contractorController.text.trim().isNotEmpty ? _contractorController.text.trim() : 'Consortium Gang A',
+      'gang': _contractorController.text.trim().isNotEmpty ? _contractorController.text.trim() : 'Consortium Gang A',
+      'safetyCertExpiry': _certExpiry?.toIso8601String().split('T')[0] ?? '2028-12-31',
+      'safetyCertValidTill': _certExpiry?.toIso8601String().split('T')[0] ?? '2028-12-31',
+      'phone': _phoneController.text.trim(),
+      'attendanceStatus': 'ABSENT',
+      'verificationMethod': 'NOT_VERIFIED',
+    };
+
+    final provider = context.read<AppProvider>();
+    final success = await provider.createWorker(workerData);
+
+    if (mounted) {
+      setState(() => _isSubmitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(success ? 'Worker added and registered successfully' : 'Worker saved to local register'),
+          backgroundColor: const Color(0xFF4EDEA3),
+        ),
+      );
+      Navigator.pop(context, true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,35 +87,30 @@ class _AddWorkerScreenState extends State<AddWorkerScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildTextField('Full Name', Icons.person),
+              _buildTextField('Full Name', Icons.person, _nameController),
               const SizedBox(height: 16),
-              _buildTextField('Badge Number', Icons.badge),
+              _buildTextField('Badge Number', Icons.badge, _badgeController),
               const SizedBox(height: 16),
               _buildDropdownField(),
               const SizedBox(height: 16),
-              _buildTextField('Skills (comma separated)', Icons.build),
+              _buildTextField('Skills (comma separated)', Icons.build, _skillsController),
               const SizedBox(height: 16),
-              _buildTextField('Contractor / Gang', Icons.group),
+              _buildTextField('Contractor / Gang', Icons.group, _contractorController),
               const SizedBox(height: 16),
               _buildDateField(),
               const SizedBox(height: 16),
-              _buildTextField('Phone Number', Icons.phone, isNumeric: true),
+              _buildTextField('Phone Number', Icons.phone, _phoneController, isNumeric: true),
               const SizedBox(height: 32),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Worker added successfully'), backgroundColor: Color(0xFF4EDEA3)),
-                    );
-                    Navigator.pop(context);
-                  }
-                },
+                onPressed: _isSubmitting ? null : _submit,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0284C7),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-                child: const Text('Submit', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                child: _isSubmitting
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : const Text('Submit', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -70,8 +119,9 @@ class _AddWorkerScreenState extends State<AddWorkerScreen> {
     );
   }
 
-  Widget _buildTextField(String label, IconData icon, {bool isNumeric = false}) {
+  Widget _buildTextField(String label, IconData icon, TextEditingController controller, {bool isNumeric = false}) {
     return TextFormField(
+      controller: controller,
       style: const TextStyle(color: Color(0xFFF1F5F9)),
       keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
       decoration: InputDecoration(
@@ -83,7 +133,7 @@ class _AddWorkerScreenState extends State<AddWorkerScreen> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
       ),
       validator: (val) {
-        if (val == null || val.isEmpty) return 'This field is required';
+        if (val == null || val.trim().isEmpty) return 'This field is required';
         return null;
       },
     );

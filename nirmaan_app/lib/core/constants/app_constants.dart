@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppConstants {
-  static const String defaultApiBaseUrl = 'http://10.0.2.2:3000';
+  static const String defaultApiBaseUrl = 'https://forge-tau-eight-89.vercel.app';
   
   // Oil India Duliajan Central Operational Area Parameters
   static const String oilIndiaSiteName = 'Oil India Duliajan Central Operational Area';

@@ -16,20 +16,46 @@ import {
 } from '../types/index';
 import { getDefaultFleet } from './equipmentData';
 
-const DB_PATH = path.join(process.cwd(), 'data', 'nirmaan.db');
+function getDbPath(): string {
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    const tmpDb = path.join('/tmp', 'nirmaan.db');
+    const bundledDb = path.join(process.cwd(), 'data', 'nirmaan.db');
+    if (!fs.existsSync(tmpDb) && fs.existsSync(bundledDb)) {
+      try {
+        fs.copyFileSync(bundledDb, tmpDb);
+      } catch (_) {}
+    }
+    return tmpDb;
+  }
+  return path.join(process.cwd(), 'data', 'nirmaan.db');
+}
 
 class RealDatabase {
   private db: DatabaseSync;
   private txDepth: number = 0;
 
   constructor() {
-    const dataDir = path.dirname(DB_PATH);
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
+    const dbPath = getDbPath();
+    try {
+      const dataDir = path.dirname(dbPath);
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+      this.db = new DatabaseSync(dbPath);
+    } catch (e) {
+      console.warn('Falling back to in-memory SQLite database:', e);
+      this.db = new DatabaseSync(':memory:');
     }
-    this.db = new DatabaseSync(DB_PATH);
+
     try {
       this.db.exec('PRAGMA journal_mode = WAL;');
+    } catch (_) {
+      try {
+        this.db.exec('PRAGMA journal_mode = MEMORY;');
+      } catch (_) {}
+    }
+
+    try {
       this.db.exec('PRAGMA synchronous = NORMAL;');
       this.db.exec('PRAGMA busy_timeout = 10000;');
       this.db.exec('PRAGMA cache_size = -64000;');
@@ -2233,4 +2259,6 @@ class RealDatabase {
   }
 }
 
-export const realDb = new RealDatabase();
+const globalForDb = globalThis as unknown as { realDb: RealDatabase };
+export const realDb = globalForDb.realDb || new RealDatabase();
+if (process.env.NODE_ENV !== 'production') globalForDb.realDb = realDb;
