@@ -28,4 +28,8 @@ jobs:
         run: npx tsc --noEmit
 
       - name: 5. Build Next.js Production Bundle
+        env:
+          CI: "true"
+          NEXT_TELEMETRY_DISABLED: "1"
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: npm run build

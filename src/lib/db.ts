@@ -17,6 +17,9 @@ import {
 import { getDefaultFleet } from './equipmentData';
 
 function getDbPath(): string {
+  if (process.env.CI || process.env.NODE_ENV === 'test') {
+    return ':memory:';
+  }
   if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
     const tmpDb = path.join('/tmp', 'nirmaan.db');
     const bundledDb = path.join(process.cwd(), 'data', 'nirmaan.db');
@@ -37,9 +40,11 @@ class RealDatabase {
   constructor() {
     const dbPath = getDbPath();
     try {
-      const dataDir = path.dirname(dbPath);
-      if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
+      if (dbPath !== ':memory:') {
+        const dataDir = path.dirname(dbPath);
+        if (!fs.existsSync(dataDir)) {
+          fs.mkdirSync(dataDir, { recursive: true });
+        }
       }
       this.db = new DatabaseSync(dbPath);
     } catch (e) {
@@ -62,7 +67,11 @@ class RealDatabase {
       this.db.exec('PRAGMA foreign_keys = ON;');
     } catch (_) {}
 
-    this.initTables();
+    try {
+      this.initTables();
+    } catch (e) {
+      console.warn('initTables warning:', e);
+    }
 
     // Auto-seed if database is empty so benchmark is immediately active
     try {

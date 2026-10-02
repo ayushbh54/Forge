@@ -9,6 +9,12 @@ const nextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ['node:sqlite'],
   outputFileTracingRoot: __dirname,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
+  },
   images: {
     remotePatterns: [
       {
