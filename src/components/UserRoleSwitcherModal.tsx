@@ -61,6 +61,14 @@ export const PRESET_ROLES: {
     description: 'Radiography NDT sign-offs, ASTM C39 concrete cube breaks, NCRs, and ITP inspections.',
   },
   {
+    roleTitle: 'HSE & Safety Lead',
+    name: 'Kavita Nair',
+    category: 'QUALITY_HSE',
+    department: 'Health, Safety & Environment (HSE)',
+    fidicRole: 'Safety Compliance Officer',
+    description: 'Hot work and confined space PTW authorization, atmospheric gas checks, zero-harm audits, and TBT briefings.',
+  },
+  {
     roleTitle: 'Stores & Materials Controller',
     name: 'Pranab Deka',
     category: 'SITE_SUPERVISION',

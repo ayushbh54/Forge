@@ -11,7 +11,7 @@ import { useWorkspace } from '../../context/WorkspaceContext';
 
 export default function WorkforcePage() {
   const workspace = useWorkspace();
-  const { user, currentProject, workers, conflicts, clockInWorker, refreshData } = workspace;
+  const { user, currentProject, workers, conflicts, clockInWorker, refreshData, sidebarCollapsed } = workspace;
   const [isWorkerModalOpen, setIsWorkerModalOpen] = useState(false);
   const [isGeminiOpen, setIsGeminiOpen] = useState(false);
   const [isOnboardOpen, setIsOnboardOpen] = useState(false);
@@ -46,7 +46,7 @@ export default function WorkforcePage() {
         />
       )}
 
-      <main className={`${currentProject ? 'pl-72' : 'pl-0'} pt-16 min-h-screen p-space-lg`}>
+      <main className={`${currentProject ? (sidebarCollapsed ? 'pl-[72px]' : 'pl-72') : 'pl-0'} pt-16 min-h-screen p-space-lg transition-all duration-300 ease-in-out`}>
         {!currentProject ? (
           <div className="max-w-xl mx-auto py-16 text-center flex flex-col items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center text-primary">

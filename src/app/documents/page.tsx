@@ -10,7 +10,7 @@ import { useWorkspace } from '../../context/WorkspaceContext';
 
 export default function DocumentsPage() {
   const workspace = useWorkspace();
-  const { user, currentProject, conflicts, refreshData } = workspace;
+  const { user, currentProject, conflicts, refreshData, sidebarCollapsed } = workspace;
   const [isGeminiOpen, setIsGeminiOpen] = useState(false);
   const [isOnboardOpen, setIsOnboardOpen] = useState(false);
 
@@ -44,7 +44,7 @@ export default function DocumentsPage() {
         />
       )}
 
-      <main className={`${currentProject ? 'pl-72' : 'pl-0'} pt-16 min-h-screen p-space-lg`}>
+      <main className={`${currentProject ? (sidebarCollapsed ? 'pl-[72px]' : 'pl-72') : 'pl-0'} pt-16 min-h-screen p-space-lg transition-all duration-300 ease-in-out`}>
         <TechnicalTranslationView />
       </main>
 

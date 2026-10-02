@@ -10,7 +10,7 @@ import { useWorkspace } from '../../context/WorkspaceContext';
 
 export default function MaterialsPage() {
   const workspace = useWorkspace();
-  const { user, currentProject, materials, conflicts, createMaterialTx, refreshData } = workspace;
+  const { user, currentProject, materials, conflicts, createMaterialTx, refreshData, sidebarCollapsed } = workspace;
   const [isGeminiOpen, setIsGeminiOpen] = useState(false);
   const [isOnboardOpen, setIsOnboardOpen] = useState(false);
 
@@ -44,7 +44,7 @@ export default function MaterialsPage() {
         />
       )}
 
-      <main className={`${currentProject ? 'pl-72' : 'pl-0'} pt-16 min-h-screen p-space-lg`}>
+      <main className={`${currentProject ? (sidebarCollapsed ? 'pl-[72px]' : 'pl-72') : 'pl-0'} pt-16 min-h-screen p-space-lg transition-all duration-300 ease-in-out`}>
         {!currentProject ? (
           <div className="max-w-xl mx-auto py-16 text-center flex flex-col items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center text-primary">

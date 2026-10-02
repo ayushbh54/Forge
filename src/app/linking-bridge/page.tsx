@@ -10,7 +10,7 @@ import { useWorkspace } from '../../context/WorkspaceContext';
 
 export default function LinkingBridgePage() {
   const workspace = useWorkspace();
-  const { user, currentProject, activities, conflicts, submitVoiceUpdate, refreshData, showToast } = workspace;
+  const { user, currentProject, activities, conflicts, submitVoiceUpdate, refreshData, showToast, sidebarCollapsed } = workspace;
 
   const [isVoiceOpen, setIsVoiceOpen] = useState(false);
   const [isGeminiOpen, setIsGeminiOpen] = useState(false);
@@ -85,7 +85,7 @@ export default function LinkingBridgePage() {
         />
       )}
 
-      <main className={`${currentProject ? 'pl-72' : 'pl-0'} pt-16 min-h-screen p-space-lg flex flex-col gap-4`}>
+      <main className={`${currentProject ? (sidebarCollapsed ? 'pl-[72px]' : 'pl-72') : 'pl-0'} pt-16 min-h-screen p-space-lg flex flex-col gap-4 transition-all duration-300 ease-in-out`}>
         {/* Banner */}
         <div className="p-5 bg-surface-container-low border border-surface-container-high rounded-DEFAULT flex items-center justify-between">
           <div className="flex items-center gap-3">

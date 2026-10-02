@@ -9,7 +9,7 @@ import { useWorkspace } from '../../context/WorkspaceContext';
 
 export default function AuditPage() {
   const workspace = useWorkspace();
-  const { user, currentProject, auditLogs, conflicts, refreshData } = workspace;
+  const { user, currentProject, auditLogs, conflicts, refreshData, sidebarCollapsed } = workspace;
   const [isGeminiOpen, setIsGeminiOpen] = useState(false);
   const [isOnboardOpen, setIsOnboardOpen] = useState(false);
 
@@ -43,7 +43,7 @@ export default function AuditPage() {
         />
       )}
 
-      <main className={`${currentProject ? 'pl-72' : 'pl-0'} pt-16 min-h-screen p-space-lg flex flex-col gap-4`}>
+      <main className={`${currentProject ? (sidebarCollapsed ? 'pl-[72px]' : 'pl-72') : 'pl-0'} pt-16 min-h-screen p-space-lg flex flex-col gap-4 transition-all duration-300 ease-in-out`}>
         <div className="p-5 bg-surface-container-low border border-surface-container-high rounded-DEFAULT flex items-center justify-between">
           <div>
             <h1 className="text-base font-bold uppercase tracking-wider text-on-surface">

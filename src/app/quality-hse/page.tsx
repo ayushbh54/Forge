@@ -58,7 +58,7 @@ const HSE_PERMITS = [
 
 export default function QualityHsePage() {
   const workspace = useWorkspace();
-  const { user, currentProject, conflicts, showToast, refreshData } = workspace;
+  const { user, currentProject, conflicts, showToast, refreshData, sidebarCollapsed } = workspace;
   const [tests, setTests] = useState(QUALITY_TESTS);
   const [isGeminiOpen, setIsGeminiOpen] = useState(false);
   const [isOnboardOpen, setIsOnboardOpen] = useState(false);
@@ -97,7 +97,7 @@ export default function QualityHsePage() {
         />
       )}
 
-      <main className={`${currentProject ? 'pl-72' : 'pl-0'} pt-16 min-h-screen p-space-lg flex flex-col gap-5`}>
+      <main className={`${currentProject ? (sidebarCollapsed ? 'pl-[72px]' : 'pl-72') : 'pl-0'} pt-16 min-h-screen p-space-lg flex flex-col gap-5 transition-all duration-300 ease-in-out`}>
         {/* Banner */}
         <div className="p-5 bg-surface-container-low border border-surface-container-high rounded-DEFAULT flex items-center justify-between">
           <div>

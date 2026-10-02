@@ -11,7 +11,7 @@ import { useWorkspace } from '../../context/WorkspaceContext';
 
 export default function SchedulePage() {
   const workspace = useWorkspace();
-  const { user, currentProject, activities, conflicts, submitVoiceUpdate, refreshData } = workspace;
+  const { user, currentProject, activities, conflicts, submitVoiceUpdate, refreshData, sidebarCollapsed } = workspace;
   const [selectedActCode, setSelectedActCode] = useState<string>(activities[0]?.activityCode || '');
   const [isOnboardOpen, setIsOnboardOpen] = useState(false);
   const [isGeminiOpen, setIsGeminiOpen] = useState(false);
@@ -47,7 +47,7 @@ export default function SchedulePage() {
         />
       )}
 
-      <main className={`${currentProject ? 'pl-72' : 'pl-0'} pt-16 min-h-screen p-space-lg`}>
+      <main className={`${currentProject ? (sidebarCollapsed ? 'pl-[72px]' : 'pl-72') : 'pl-0'} pt-16 min-h-screen p-space-lg transition-all duration-300 ease-in-out`}>
         {!currentProject || activities.length === 0 ? (
           <div className="max-w-2xl mx-auto py-16 text-center flex flex-col items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center text-primary">

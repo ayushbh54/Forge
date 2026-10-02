@@ -35,11 +35,21 @@ interface WorkspaceContextType {
   loading: boolean;
   toastMessage: string | null;
 
+  // Authentication & Layout
+  isAuthenticated: boolean;
+  sidebarCollapsed: boolean;
+  toggleSidebar: () => void;
+  setSidebarCollapsed: (v: boolean) => void;
+  loginAsPersona: (user: UserProfile, project?: Project) => void;
+  logout: () => void;
+
   // Role detection helpers
   isLabour: boolean;
   isSupervisor: boolean;
   isPlanning: boolean;
   isQAQC: boolean;
+  isHSE: boolean;
+  isMaterials: boolean;
   isDirector: boolean;
 
   // Actions
@@ -76,6 +86,8 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefin
 
 export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUserState] = useState<UserProfile>(DEFAULT_USER);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [sidebarCollapsed, setSidebarCollapsedState] = useState<boolean>(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [activities, setActivities] = useState<ScheduleActivity[]>([]);
@@ -94,12 +106,21 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
   // Load state from local storage on client mount
   useEffect(() => {
     try {
+      const savedAuth = localStorage.getItem('nirmaan_authenticated');
       const savedUser = localStorage.getItem('nirmaan_user');
+      const savedSidebar = localStorage.getItem('nirmaan_sidebar_collapsed');
+
+      if (savedAuth === 'true') {
+        setIsAuthenticated(true);
+      }
       if (savedUser) {
         setUserState(JSON.parse(savedUser));
       }
+      if (savedSidebar === 'true') {
+        setSidebarCollapsedState(true);
+      }
     } catch (e) {
-      console.warn('Could not read user from local storage:', e);
+      console.warn('Could not read session from local storage:', e);
     }
   }, []);
 
@@ -111,6 +132,44 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
     } catch (e) {
       console.warn('Could not write user to local storage:', e);
     }
+  };
+
+  const loginAsPersona = (newUser: UserProfile, newProject?: Project) => {
+    setUser(newUser);
+    setIsAuthenticated(true);
+    try {
+      localStorage.setItem('nirmaan_authenticated', 'true');
+      localStorage.setItem('nirmaan_user', JSON.stringify(newUser));
+    } catch (e) {}
+    if (newProject && newProject.id !== currentProject?.id) {
+      refreshData(newProject.id);
+    }
+    showToast(`Logged in as ${newUser.name} (${newUser.role})`);
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    try {
+      localStorage.removeItem('nirmaan_authenticated');
+    } catch (e) {}
+    showToast('Logged out of project workspace.');
+  };
+
+  const toggleSidebar = () => {
+    setSidebarCollapsedState(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('nirmaan_sidebar_collapsed', String(next));
+      } catch (e) {}
+      return next;
+    });
+  };
+
+  const setSidebarCollapsed = (v: boolean) => {
+    setSidebarCollapsedState(v);
+    try {
+      localStorage.setItem('nirmaan_sidebar_collapsed', String(v));
+    } catch (e) {}
   };
 
   // Primary Data Loading Engine from real SQLite database
@@ -184,6 +243,11 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
   // Switch User Role
   const switchUserRole = (newUser: UserProfile, newProject?: Project) => {
     setUser(newUser);
+    setIsAuthenticated(true);
+    try {
+      localStorage.setItem('nirmaan_authenticated', 'true');
+      localStorage.setItem('nirmaan_user', JSON.stringify(newUser));
+    } catch (e) {}
     if (newProject && newProject.id !== currentProject?.id) {
       refreshData(newProject.id);
     }
@@ -218,6 +282,11 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
       };
 
       setUser(newUser);
+      setIsAuthenticated(true);
+      try {
+        localStorage.setItem('nirmaan_authenticated', 'true');
+        localStorage.setItem('nirmaan_user', JSON.stringify(newUser));
+      } catch (e) {}
       await refreshData(data.user.project_id);
       showToast(`Welcome ${params.name}! Connected to Project ${params.projectId} workspace as ${params.role}.`);
       return true;
@@ -473,7 +542,9 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
   const isSupervisor = roleStr.includes('supervisor') || roleStr.includes('foreman') || roleStr.includes('section in-charge');
   const isPlanning = roleStr.includes('planning') || roleStr.includes('controls') || roleStr.includes('scheduler');
   const isQAQC = roleStr.includes('qa') || roleStr.includes('qc') || roleStr.includes('inspector') || roleStr.includes('quality');
-  const isDirector = roleStr.includes('director') || roleStr.includes('manager') || roleStr.includes('representative');
+  const isHSE = roleStr.includes('hse') || roleStr.includes('safety') || roleStr.includes('environment');
+  const isMaterials = roleStr.includes('material') || roleStr.includes('store') || roleStr.includes('inventory') || roleStr.includes('supply');
+  const isDirector = roleStr.includes('director') || roleStr.includes('manager') || roleStr.includes('representative') || (!isLabour && !isSupervisor && !isPlanning && !isQAQC && !isHSE && !isMaterials);
 
   return (
     <WorkspaceContext.Provider
@@ -489,10 +560,19 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
         loading,
         toastMessage,
 
+        isAuthenticated,
+        sidebarCollapsed,
+        toggleSidebar,
+        setSidebarCollapsed,
+        loginAsPersona,
+        logout,
+
         isLabour,
         isSupervisor,
         isPlanning,
         isQAQC,
+        isHSE,
+        isMaterials,
         isDirector,
 
         refreshData,
