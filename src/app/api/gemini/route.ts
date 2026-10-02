@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     }
 
     if (action === 'PARSE_FIELD_UPDATE') {
-      const { rawText, projectId } = payload;
+      const { rawText, projectId } = payload || {};
       if (!rawText) {
         return NextResponse.json({ success: false, error: 'rawText is required' }, { status: 400 });
       }
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     }
 
     if (action === 'TRIANGULATION_ANALYSIS') {
-      const { activityCode, projectId } = payload;
+      const { activityCode, projectId } = payload || {};
       const activities = realDb.getActivities(projectId);
       const act = activities.find(a => a.activityCode === activityCode) || activities[0];
       if (!act) {
@@ -55,7 +55,10 @@ export async function POST(request: Request) {
     }
 
     if (action === 'COPILOT_QUERY') {
-      const { query, projectId } = payload;
+      const { query, projectId } = payload || {};
+      if (!query) {
+        return NextResponse.json({ success: false, error: 'query is required' }, { status: 400 });
+      }
       const project = projectId ? realDb.getProjectById(projectId) || null : null;
       const activities = realDb.getActivities(projectId);
       const workers = realDb.getWorkers(projectId);

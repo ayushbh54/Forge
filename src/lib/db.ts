@@ -15,9 +15,10 @@ import {
   DPRRecord
 } from '../types/index';
 import { getDefaultFleet } from './equipmentData';
+import { extractEntitiesFromFieldText, matchEntitiesToActivities } from './linkingEngine';
 
 function getDbPath(): string {
-  if (process.env.CI || process.env.NODE_ENV === 'test') {
+  if (process.env.CI || process.env.NODE_ENV === 'test' || process.env.NEXT_PHASE === 'phase-production-build') {
     return ':memory:';
   }
   if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
@@ -31,6 +32,13 @@ function getDbPath(): string {
     return tmpDb;
   }
   return path.join(process.cwd(), 'data', 'nirmaan.db');
+}
+
+let _seqCounter = 0;
+export function uniqueId(prefix: string): string {
+  _seqCounter = (_seqCounter + 1) % 100000;
+  const rand = crypto.randomBytes(3).toString('hex');
+  return `${prefix}-${Date.now().toString().slice(-6)}-${_seqCounter}-${rand}`;
 }
 
 class RealDatabase {
@@ -341,6 +349,28 @@ class RealDatabase {
     try { this.db.exec("ALTER TABLE workers ADD COLUMN latitude REAL DEFAULT 27.4825;"); } catch (_) {}
     try { this.db.exec("ALTER TABLE workers ADD COLUMN longitude REAL DEFAULT 95.3225;"); } catch (_) {}
     try { this.db.exec("ALTER TABLE audit_logs ADD COLUMN sha256_hash TEXT;"); } catch (_) {}
+
+    // High-performance B-tree indexes for instant querying and joins
+    try {
+      this.db.exec(`
+        CREATE INDEX IF NOT EXISTS idx_projects_code ON projects(code);
+        CREATE INDEX IF NOT EXISTS idx_wbs_project ON wbs_nodes(project_id);
+        CREATE INDEX IF NOT EXISTS idx_activities_project ON schedule_activities(project_id);
+        CREATE INDEX IF NOT EXISTS idx_activities_code ON schedule_activities(activity_code);
+        CREATE INDEX IF NOT EXISTS idx_activity_steps_act ON activity_steps(activity_id);
+        CREATE INDEX IF NOT EXISTS idx_workers_project ON workers(project_id);
+        CREATE INDEX IF NOT EXISTS idx_workers_badge ON workers(badge_number);
+        CREATE INDEX IF NOT EXISTS idx_materials_project ON materials_ledger(project_id);
+        CREATE INDEX IF NOT EXISTS idx_conflicts_project ON conflicts(project_id);
+        CREATE INDEX IF NOT EXISTS idx_conflicts_status ON conflicts(status);
+        CREATE INDEX IF NOT EXISTS idx_informal_project ON informal_site_updates(project_id);
+        CREATE INDEX IF NOT EXISTS idx_audit_project ON audit_logs(project_id);
+        CREATE INDEX IF NOT EXISTS idx_users_project ON users(project_id);
+        CREATE INDEX IF NOT EXISTS idx_equipment_project ON equipment(project_id);
+        CREATE INDEX IF NOT EXISTS idx_dpr_project ON dpr(project_id);
+        CREATE INDEX IF NOT EXISTS idx_dpr_act ON dpr(activity_code);
+      `);
+    } catch (_) {}
   }
 
   getDatabase(): DatabaseSync {
@@ -497,8 +527,8 @@ class RealDatabase {
 
   createActivity(projectId: string, a: Partial<ScheduleActivity>): ScheduleActivity {
     return this.transaction(() => {
-      const id = a.id || `ACT-${Date.now().toString().slice(-6)}`;
-      const actCode = a.activityCode || `ACT-${Date.now().toString().slice(-4)}`;
+      const id = a.id || uniqueId('ACT');
+      const actCode = a.activityCode || uniqueId('ACT');
       
       this.db.prepare(`
         INSERT INTO schedule_activities (
@@ -537,6 +567,127 @@ class RealDatabase {
     });
   }
 
+  updateActivityProgress(
+    projectId: string,
+    activityCode: string,
+    progress: number,
+    delayReason?: string,
+    reportedBy: string = 'Field Operations'
+  ): ScheduleActivity | undefined {
+    return this.transaction(() => {
+      const act = this.db.prepare(
+        'SELECT * FROM schedule_activities WHERE (activity_code = ? OR id = ?) AND project_id = ?'
+      ).get(activityCode, activityCode, projectId) as any;
+
+      if (!act) {
+        // Fallback search across all projects if project_id mismatch
+        const fallbackAct = this.db.prepare(
+          'SELECT * FROM schedule_activities WHERE activity_code = ? OR id = ?'
+        ).get(activityCode, activityCode) as any;
+        if (!fallbackAct) return undefined;
+        return this.updateActivityProgress(fallbackAct.project_id, fallbackAct.activity_code, progress, delayReason, reportedBy);
+      }
+
+      const prevProgress = act.contractor_reported_progress || 0;
+      const newContractorProgress = Math.max(0, Math.min(100, Math.round(Number(progress) * 10) / 10));
+
+      // 5-Factor Triangulation Consensus Calculation
+      // Formula: LiDAR/Drone (30%) + QS Measurement (35%) + QC Passed (35%)
+      const droneLidar = act.drone_lidar_progress || 0;
+      const qsProgress = act.quantity_survey_progress || 0;
+      const qcProgress = act.qc_passed_progress || 0;
+      
+      const weightedConsensus = (droneLidar * 0.30) + (qsProgress * 0.35) + (qcProgress * 0.35);
+      const validatedConsensusProgress = Math.round(weightedConsensus * 10) / 10;
+      const deltaVsConsensus = Math.round((newContractorProgress - validatedConsensusProgress) * 10) / 10;
+      const toleranceExceeded = Math.abs(deltaVsConsensus) > 5.0 ? 1 : 0; // Contract threshold is ±5%
+
+      const plannedQty = act.planned_quantity || 100;
+      const newInstalled = Math.round((newContractorProgress / 100) * plannedQty);
+      const evidenceStr = delayReason
+        ? `Consensus Reconciled: ${validatedConsensusProgress}% (Delay noted: ${delayReason})`
+        : `Consensus Reconciled: ${validatedConsensusProgress}% (Field claim: ${newContractorProgress}%)`;
+
+      this.db.prepare(`
+        UPDATE schedule_activities
+        SET contractor_reported_progress = ?,
+            validated_consensus_progress = ?,
+            delta_vs_consensus = ?,
+            tolerance_exceeded = ?,
+            installed_quantity = ?,
+            last_evidence_update = ?,
+            freshness_state = 'CURRENT'
+        WHERE id = ?
+      `).run(
+        newContractorProgress,
+        validatedConsensusProgress,
+        deltaVsConsensus,
+        toleranceExceeded,
+        newInstalled,
+        evidenceStr,
+        act.id
+      );
+
+      // Flag or update conflict if tolerance exceeded
+      if (toleranceExceeded) {
+        const confId = `CNF-TOL-${act.activity_code}`;
+        const severity = Math.abs(deltaVsConsensus) > 10.0 ? 'CRITICAL' : 'HIGH';
+        this.createConflict({
+          id: confId,
+          projectId: act.project_id,
+          activityCode: act.activity_code,
+          activityName: act.name,
+          type: 'PROGRESS_VARIANCE',
+          severity,
+          title: `Variance Alert: Contractor Claim (${newContractorProgress}%) exceeds Consensus (${validatedConsensusProgress}%)`,
+          description: `Field reported progress deviates by +${deltaVsConsensus}% beyond the ±5.0% contract tolerance limit under FIDIC Cl. 14.3.`,
+          varianceValue: `+${deltaVsConsensus}% delta`,
+          claimedValue: `${newContractorProgress}% Reported`,
+          verifiedValue: `${validatedConsensusProgress}% Consensus`,
+          specOrClause: 'FIDIC Cl. 14.3 (Interim Payment Triangulation)',
+          actionRequired: 'Joint site walk and physical measurement reconciliation required.',
+          status: 'OPEN',
+        });
+      }
+
+      // If delay reason is specified and not empty, record FIDIC 8.4 delay conflict
+      if (delayReason && delayReason !== 'None' && delayReason.toLowerCase() !== 'no delay') {
+        const delayConfId = uniqueId('CNF-DLY');
+        this.createConflict({
+          id: delayConfId,
+          projectId: act.project_id,
+          activityCode: act.activity_code,
+          activityName: act.name,
+          type: 'SCHEDULE_DELAY',
+          severity: 'HIGH',
+          title: `Schedule Delay Notice: ${act.name}`,
+          description: `Reported delay on ${act.activity_code}: ${delayReason}`,
+          varianceValue: `${deltaVsConsensus}%`,
+          claimedValue: `${newContractorProgress}%`,
+          verifiedValue: `${validatedConsensusProgress}%`,
+          specOrClause: 'FIDIC Cl. 8.4 (Extension of Time for Completion)',
+          actionRequired: 'Assess extension of time and contractor mitigation plan.',
+          status: 'OPEN',
+        });
+      }
+
+      // Audit Log with SHA-256
+      this.addAuditLog({
+        projectId: act.project_id,
+        actorName: reportedBy,
+        actorRole: 'Triangulation Truth Reconciler',
+        action: 'CONSENSUS_TRUTH_RECALCULATED',
+        entityType: 'PROGRESS',
+        entityId: act.activity_code,
+        previousValue: `${prevProgress}%`,
+        newValue: `${validatedConsensusProgress}% (Claim: ${newContractorProgress}%)`,
+        reason: delayReason ? `Updated with delay note: ${delayReason}` : 'Schedule truth consensus recalculated across LiDAR, QS, and QC evidence.',
+      });
+
+      return this.getActivities(act.project_id).find(a => a.id === act.id);
+    });
+  }
+
   // --- WORKFORCE ---
   getWorkers(projectId?: string): WorkerProfile[] {
     let query = 'SELECT * FROM workers';
@@ -569,8 +720,8 @@ class RealDatabase {
 
   createWorker(projectId: string, w: Partial<WorkerProfile>): WorkerProfile {
     return this.transaction(() => {
-      const id = w.id || `WRK-${Date.now().toString().slice(-4)}`;
-      const badge = w.badgeNumber || `LAB-${Date.now().toString().slice(-4)}`;
+      const id = w.id || uniqueId('WRK');
+      const badge = w.badgeNumber || uniqueId('LAB');
       const lat = w.latitude ?? 27.4825;
       const lng = w.longitude ?? 95.3225;
       const clockIn = w.lastClockIn || `07:45 AM (Duliajan Geofence: ${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E)`;
@@ -611,14 +762,35 @@ class RealDatabase {
     });
   }
 
-  recordAttendance(workerId: string, status: string = 'VERIFIED_PRESENT', method: string = 'GEOFENCE_BIOMETRIC', confidence: number = 98.0) {
+  recordAttendance(
+    workerId: string,
+    status: string = 'VERIFIED_PRESENT',
+    method: string = 'GEOFENCE_BIOMETRIC',
+    confidence: number = 98.0,
+    lat?: number,
+    lng?: number
+  ) {
     return this.transaction(() => {
-      const timestamp = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }) + ' IST (Duliajan Gate 1 Geofence: 27.4825° N, 95.3225° E)';
-      this.db.prepare(`
-        UPDATE workers 
-        SET attendance_status = ?, verification_method = ?, confidence_score = ?, last_clock_in = ?
-        WHERE id = ? OR badge_number = ?
-      `).run(status, method, confidence, timestamp, workerId, workerId);
+      const actualLat = lat !== undefined ? Number(lat) : undefined;
+      const actualLng = lng !== undefined ? Number(lng) : undefined;
+      const geoStr = actualLat !== undefined && actualLng !== undefined
+        ? `GPS Geofence: ${actualLat.toFixed(4)}° N, ${actualLng.toFixed(4)}° E`
+        : 'Duliajan Gate 1 Geofence: 27.4825° N, 95.3225° E';
+      const timestamp = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }) + ` IST (${geoStr})`;
+
+      if (actualLat !== undefined && actualLng !== undefined) {
+        this.db.prepare(`
+          UPDATE workers 
+          SET attendance_status = ?, verification_method = ?, confidence_score = ?, last_clock_in = ?, latitude = ?, longitude = ?
+          WHERE id = ? OR badge_number = ?
+        `).run(status, method, confidence, timestamp, actualLat, actualLng, workerId, workerId);
+      } else {
+        this.db.prepare(`
+          UPDATE workers 
+          SET attendance_status = ?, verification_method = ?, confidence_score = ?, last_clock_in = ?
+          WHERE id = ? OR badge_number = ?
+        `).run(status, method, confidence, timestamp, workerId, workerId);
+      }
 
       const worker = this.db.prepare('SELECT * FROM workers WHERE id = ? OR badge_number = ?').get(workerId, workerId) as any;
       if (worker) {
@@ -634,13 +806,31 @@ class RealDatabase {
           reason: `GPS Geofence + Biometric timestamped at ${timestamp}`,
         });
       }
-      return worker;
+      return worker ? {
+        id: worker.id,
+        badgeNumber: worker.badge_number,
+        name: worker.name,
+        trade: worker.trade as any,
+        skills: JSON.parse(worker.skills || '[]'),
+        contractor: worker.contractor,
+        activeProject: worker.project_id,
+        assignedActivityId: 'PIP-L5-024',
+        safetyCertValidTill: worker.safety_cert_valid_till || '2027-01-01',
+        medicalClearance: Boolean(worker.medical_clearance),
+        photoUrl: worker.photo_url || '',
+        lastClockIn: worker.last_clock_in,
+        attendanceStatus: worker.attendance_status as any,
+        verificationMethod: worker.verification_method as any,
+        confidenceScore: worker.confidence_score,
+        latitude: worker.latitude ?? 27.4825,
+        longitude: worker.longitude ?? 95.3225,
+      } : undefined;
     });
   }
 
-  recordAttendanceBatch(items: Array<{ workerId: string; status?: string; method?: string; confidence?: number }>): any[] {
+  recordAttendanceBatch(items: Array<{ workerId: string; status?: string; method?: string; confidence?: number; latitude?: number; longitude?: number }>): any[] {
     return this.transaction(() => {
-      return items.map(item => this.recordAttendance(item.workerId, item.status, item.method, item.confidence));
+      return items.map(item => this.recordAttendance(item.workerId, item.status, item.method, item.confidence, item.latitude, item.longitude));
     });
   }
 
@@ -673,8 +863,8 @@ class RealDatabase {
 
   createMaterialTx(projectId: string, tx: Partial<MaterialTransaction>): MaterialTransaction {
     return this.transaction(() => {
-      const id = tx.id || `TX-${Date.now().toString().slice(-4)}`;
-      const docNo = tx.docNumber || `${tx.docType || 'GIN'}-${Date.now().toString().slice(-4)}`;
+      const id = tx.id || uniqueId('TX');
+      const docNo = tx.docNumber || `${tx.docType || 'GIN'}-${uniqueId('DOC').slice(4)}`;
       const date = tx.date || new Date().toISOString().split('T')[0];
 
       this.db.prepare(`
@@ -850,7 +1040,7 @@ class RealDatabase {
     ipOrDevice?: string;
     sha256Hash?: string;
   }): AuditRecord {
-    const id = `AUD-${Date.now().toString().slice(-6)}`;
+    const id = uniqueId('AUD');
     const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) + ' IST';
     const payload = `${id}|${log.projectId || ''}|${timestamp}|${log.actorName}|${log.actorRole}|${log.action}|${log.entityType}|${log.entityId}|${log.previousValue || ''}|${log.newValue || ''}|${log.reason || ''}`;
     const hash = log.sha256Hash || crypto.createHash('sha256').update(payload).digest('hex');
@@ -914,7 +1104,7 @@ class RealDatabase {
         );
       }
 
-      const updId = `UPD-DPR-${Date.now().toString().slice(-4)}`;
+      const updId = uniqueId('UPD-DPR');
       this.db.prepare(`
         INSERT INTO informal_site_updates (
           id, project_id, source, raw_input, timestamp, reported_by, supervisor_role,
@@ -927,7 +1117,7 @@ class RealDatabase {
         data.reportedBy, data.supervisorRole, data.activityCode, 99.0, 'CONFIRMED'
       );
 
-      const dprRecordId = `DPR-${Date.now().toString().slice(-6)}`;
+      const dprRecordId = uniqueId('DPR');
       try {
         this.db.prepare(`
           INSERT INTO dpr (
@@ -951,7 +1141,7 @@ class RealDatabase {
       } catch (_) {}
 
       if (data.delayReason && data.delayReason !== 'NONE' && data.delayReason.toLowerCase() !== 'no delay') {
-        const confId = `CNF-${Date.now().toString().slice(-4)}`;
+        const confId = uniqueId('CNF');
         this.db.prepare(`
           INSERT INTO conflicts (
             id, project_id, activity_code, activity_name, type, severity, title,
@@ -1105,6 +1295,23 @@ class RealDatabase {
         this.seedDefaultEquipment(projectId);
         eq = this.db.prepare('SELECT * FROM equipment WHERE id = ? AND project_id = ?').get(params.equipmentId, projectId) as any;
       }
+      if (!eq) {
+        this.db.prepare(`
+          INSERT OR REPLACE INTO equipment (
+            id, project_id, name, category, category_name, tag, operator, status,
+            location, operating_hours, hours_today, fuel_level, engine_temp,
+            battery_voltage, vibration_level, maintenance_due, associated_act,
+            telemetry_json, last_breakdown_reason, last_breakdown_at, created_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).run(
+          params.equipmentId, projectId, `Asset ${params.equipmentId}`, 'GENERAL',
+          'Heavy Fleet', 'Field Fleet Asset', params.reportedBy || 'Equipment Operator',
+          'BREAKDOWN', 'Site Corridor Zone A', '100 hrs', '0.0 hrs', 60, '85°C (Normal)',
+          '24.0 V', '0.8 mm/s', 'In 100 hrs', params.activityCode || 'PIP-L5-024',
+          '{}', params.breakdownReason, new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) + ' IST', new Date().toISOString()
+        );
+        eq = this.db.prepare('SELECT * FROM equipment WHERE id = ?').get(params.equipmentId) as any;
+      }
 
       const previousStatus = eq?.status || 'ACTIVE';
       const nowIso = new Date().toISOString();
@@ -1130,7 +1337,7 @@ class RealDatabase {
       const notes = params.notes || `Equipment ${equipmentName} (${params.equipmentId}) breakdown recorded at ${timestampStr}. Reason: ${params.breakdownReason}. Estimated downtime: ${downtimeHours} hours. Immediate mechanic dispatch required.`;
 
       // 3. Write DPR record in SQLite dpr table
-      const dprRecordId = `DPR-BRK-${Date.now().toString().slice(-6)}`;
+      const dprRecordId = uniqueId('DPR-BRK');
       this.db.prepare(`
         INSERT INTO dpr (
           id, project_id, activity_code, equipment_id, report_date,
@@ -1252,7 +1459,7 @@ class RealDatabase {
   }) {
     return this.transaction(() => {
       const projectId = data.projectId || this.getProjects()[0]?.id || 'PRJ-OIL-2026';
-      const updId = `UPD-WTH-${Date.now().toString().slice(-6)}`;
+      const updId = uniqueId('UPD-WTH');
       const timestampStr = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }) + ' IST';
       const reportedBy = data.reportedBy || 'AWS-09 Meteorological Sensor';
       const supervisorRole = data.supervisorRole || 'Site Safety & Weather In-Charge';
@@ -1446,7 +1653,7 @@ class RealDatabase {
     }
   }
 
-  getInformalUpdates(projectId?: string) {
+  getInformalUpdates(projectId?: string): InformalSiteUpdate[] {
     let query = 'SELECT * FROM informal_site_updates';
     const params: any[] = [];
     if (projectId) {
@@ -1464,17 +1671,118 @@ class RealDatabase {
       return {
         id: r.id,
         projectId: r.project_id,
-        source: r.source,
+        source: r.source as any,
         rawInput: r.raw_input,
         timestamp: r.timestamp,
         reportedBy: r.reported_by,
         supervisorRole: r.supervisor_role,
-        locationGeofence: r.location_geofence,
+        locationGeofence: r.location_geofence || 'Site GPS (Verified within Geofence)',
         extractedEntities: entities,
+        matchedActivityId: r.matched_activity_code,
         matchedActivityCode: r.matched_activity_code,
+        matchedActivityName: r.matched_activity_code ? `Activity ${r.matched_activity_code}` : undefined,
         linkingConfidence: r.linking_confidence,
         isOutOfSequence: Boolean(r.is_out_of_sequence),
-        linkingStatus: r.linking_status,
+        linkingStatus: r.linking_status as any,
+      };
+    });
+  }
+
+  submitInformalUpdate(input: {
+    projectId: string;
+    rawInput: string;
+    source: string;
+    reportedBy: string;
+    supervisorRole: string;
+    locationGeofence?: string;
+  }): { update: InformalSiteUpdate; candidateMatches: any[] } {
+    return this.transaction(() => {
+      const extracted = extractEntitiesFromFieldText(input.rawInput);
+      const activities = this.getActivities(input.projectId);
+      const matches = matchEntitiesToActivities(extracted, activities);
+      const bestMatch = matches.length > 0 ? matches[0] : undefined;
+
+      const updId = uniqueId('UPD');
+      const timestampStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) + ' IST';
+      const geofence = input.locationGeofence || 'Site GPS (Verified within Geofence)';
+      const matchedActCode = bestMatch?.activity.activityCode || null;
+      const linkingConfidence = bestMatch?.confidenceScore || 0;
+      const isOutOfSequence = bestMatch?.isOutOfSequence ? 1 : 0;
+      const linkingStatus = bestMatch ? 'PENDING_CONFIRMATION' : 'MANUALLY_MAPPED';
+
+      const entitiesJson = JSON.stringify({
+        discipline: extracted.discipline,
+        lineOrTag: extracted.lineOrTag,
+        action: extracted.action,
+        quantity: extracted.quantity,
+        unit: extracted.unit,
+        progressPercentage: extracted.progressPercentage,
+        delayReason: extracted.delayReason,
+      });
+
+      this.db.prepare(`
+        INSERT INTO informal_site_updates (
+          id, project_id, source, raw_input, timestamp, reported_by, supervisor_role,
+          location_geofence, extracted_entities, matched_activity_code, linking_confidence,
+          is_out_of_sequence, linking_status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        updId,
+        input.projectId,
+        input.source,
+        input.rawInput,
+        timestampStr,
+        input.reportedBy,
+        input.supervisorRole,
+        geofence,
+        entitiesJson,
+        matchedActCode,
+        linkingConfidence,
+        isOutOfSequence,
+        linkingStatus
+      );
+
+      this.addAuditLog({
+        projectId: input.projectId,
+        actorName: input.reportedBy,
+        actorRole: input.supervisorRole,
+        action: 'INFORMAL_UPDATE_CAPTURED',
+        entityType: 'ACTIVITY',
+        entityId: matchedActCode || 'UNLINKED',
+        newValue: `${input.source}: ${input.rawInput.substring(0, 60)}...`,
+        reason: bestMatch
+          ? `Mapped to ${matchedActCode} with ${linkingConfidence}% confidence`
+          : 'Logged for manual supervisor linking',
+      });
+
+      const newUpdate: InformalSiteUpdate = {
+        id: updId,
+        source: input.source as any,
+        rawInput: input.rawInput,
+        timestamp: timestampStr,
+        reportedBy: input.reportedBy,
+        supervisorRole: input.supervisorRole,
+        locationGeofence: geofence,
+        extractedEntities: {
+          discipline: extracted.discipline,
+          lineOrTag: extracted.lineOrTag,
+          action: extracted.action,
+          quantity: extracted.quantity,
+          unit: extracted.unit,
+          progressPercentage: extracted.progressPercentage,
+          delayReason: extracted.delayReason,
+        },
+        matchedActivityId: bestMatch?.activity.id,
+        matchedActivityCode: bestMatch?.activity.activityCode,
+        matchedActivityName: bestMatch?.activity.name,
+        linkingConfidence,
+        isOutOfSequence: Boolean(isOutOfSequence),
+        linkingStatus: linkingStatus as any,
+      };
+
+      return {
+        update: newUpdate,
+        candidateMatches: matches,
       };
     });
   }
@@ -1492,7 +1800,28 @@ class RealDatabase {
     trade?: string;
   }) {
     return this.transaction(() => {
-      const id = u.id || `USR-${Date.now().toString().slice(-4)}`;
+      // Check if user already exists by badgeNumber or email in this project
+      let existing: any = null;
+      if (u.badgeNumber) {
+        existing = this.db.prepare('SELECT id FROM users WHERE project_id = ? AND badge_number = ?').get(u.projectId, u.badgeNumber);
+      }
+      if (!existing && u.email) {
+        existing = this.db.prepare('SELECT id FROM users WHERE project_id = ? AND LOWER(email) = LOWER(?)').get(u.projectId, u.email);
+      }
+
+      if (existing) {
+        this.db.prepare(`
+          UPDATE users 
+          SET name = ?, phone = COALESCE(?, phone), email = COALESCE(?, email), 
+              role = ?, department = ?, trade = COALESCE(?, trade)
+          WHERE id = ?
+        `).run(
+          u.name, u.phone || null, u.email || null, u.role, u.department, u.trade || null, existing.id
+        );
+        return this.getUserById(existing.id);
+      }
+
+      const id = u.id || uniqueId('USR');
       const createdAt = new Date().toISOString();
       
       this.db.prepare(`
@@ -1530,6 +1859,22 @@ class RealDatabase {
   
       return this.getUserById(id);
     });
+  }
+
+  findUser(projectId: string, identifier: { email?: string; badgeNumber?: string; name?: string }) {
+    if (identifier.badgeNumber) {
+      const u = this.db.prepare('SELECT * FROM users WHERE project_id = ? AND badge_number = ?').get(projectId, identifier.badgeNumber);
+      if (u) return u;
+    }
+    if (identifier.email) {
+      const u = this.db.prepare('SELECT * FROM users WHERE project_id = ? AND LOWER(email) = LOWER(?)').get(projectId, identifier.email);
+      if (u) return u;
+    }
+    if (identifier.name) {
+      const u = this.db.prepare('SELECT * FROM users WHERE project_id = ? AND LOWER(name) = LOWER(?)').get(projectId, identifier.name);
+      if (u) return u;
+    }
+    return null;
   }
 
   getUserById(id: string) {

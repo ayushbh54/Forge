@@ -11,7 +11,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { conflictId, resolutionNote = 'Resolved by Project Management Authority' } = body;
+    const conflictId = body.conflictId || body.id;
+    const resolutionNote = body.resolutionNote || body.resolution || 'Resolved by Project Management Authority';
 
     // Support conflict raising
     if (body.action === 'RAISE' || (!conflictId && body.title)) {

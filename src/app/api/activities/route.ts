@@ -27,12 +27,17 @@ export async function POST(request: Request) {
       });
     }
 
+    if (Array.isArray(body.activities)) {
+      const acts = realDb.createActivitiesBatch(projectId, body.activities);
+      return NextResponse.json({ success: true, count: acts.length, activities: acts });
+    }
+
     if (activityData) {
       const act = realDb.createActivity(projectId, activityData);
       return NextResponse.json({ success: true, activity: act });
     }
 
-    return NextResponse.json({ success: false, error: 'Invalid payload: provide importMode or activityData' }, { status: 400 });
+    return NextResponse.json({ success: false, error: 'Invalid payload: provide importMode, activities array, or activityData' }, { status: 400 });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

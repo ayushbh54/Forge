@@ -133,6 +133,7 @@ export interface ScheduleActivity {
 
 export interface InformalSiteUpdate {
   id: string;
+  projectId?: string;
   source: 'VOICE_HINDI' | 'VOICE_ENGLISH' | 'WHATSAPP' | 'DPR_TEXT' | 'SITE_DIARY' | 'PHOTO_SCAN';
   rawInput: string;
   timestamp: string;

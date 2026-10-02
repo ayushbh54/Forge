@@ -1,7 +1,16 @@
 import { NextResponse } from 'next/server';
 import { realDb } from '@/lib/db';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const projectId = searchParams.get('projectId') || searchParams.get('id');
+  if (projectId) {
+    const project = realDb.getProjectById(projectId);
+    if (!project) {
+      return NextResponse.json({ success: false, error: `Project '${projectId}' not found` }, { status: 404 });
+    }
+    return NextResponse.json({ success: true, project });
+  }
   const projects = realDb.getProjects();
   return NextResponse.json({ success: true, count: projects.length, projects });
 }
