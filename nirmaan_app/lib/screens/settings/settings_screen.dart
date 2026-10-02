@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/localization/language_controller.dart';
+import '../../core/models/persona_model.dart';
 import '../../providers/app_provider.dart';
+import '../auth/login_screen.dart';
 import 'gemini_keys_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -35,13 +37,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
     final user = provider.currentUser;
+    final currentPersona = getPersonaForUser(user);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0B1326),
       appBar: AppBar(
         backgroundColor: const Color(0xFF111C38),
         title: const Text(
-          'Settings & Localization',
+          'Settings & Enterprise Profile',
           style: TextStyle(color: Color(0xFFF1F5F9), fontWeight: FontWeight.bold),
         ),
         elevation: 0,
@@ -56,46 +59,144 @@ class _SettingsScreenState extends State<SettingsScreen> {
             padding: const EdgeInsets.all(16),
             children: [
               // User Profile Section
-              _buildSectionHeader('User Profile', Icons.account_circle_outlined),
+              _buildSectionHeader('Enterprise Identity & Role', Icons.badge_rounded),
               const SizedBox(height: 8),
               Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFF162347),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF26396E)),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: currentPersona.accentColor.withValues(alpha: 0.4), width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: currentPersona.accentColor.withValues(alpha: 0.1),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: ListTile(
-                  leading: const CircleAvatar(
-                    backgroundColor: Color(0xFF0284C7),
-                    child: Icon(Icons.person, color: Colors.white),
-                  ),
-                  title: Text(
-                    user?['name'] ?? 'Admin User',
-                    style: const TextStyle(
-                      color: Color(0xFFF1F5F9),
-                      fontWeight: FontWeight.bold,
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundColor: currentPersona.accentColor.withValues(alpha: 0.2),
+                          child: Icon(currentPersona.icon, color: currentPersona.accentColor, size: 26),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      user?['name'] ?? currentPersona.name,
+                                      style: const TextStyle(
+                                        color: Color(0xFFF1F5F9),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: currentPersona.accentColor.withValues(alpha: 0.2),
+                                      borderRadius: BorderRadius.circular(4),
+                                      border: Border.all(color: currentPersona.accentColor.withValues(alpha: 0.5)),
+                                    ),
+                                    child: Text(
+                                      currentPersona.category,
+                                      style: TextStyle(
+                                        color: currentPersona.accentColor,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                user?['role'] ?? currentPersona.role,
+                                style: const TextStyle(
+                                  color: Color(0xFF38BDF8),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                currentPersona.fidicRole,
+                                style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: const Color(0xFF10B981)),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 10),
+                              SizedBox(width: 4),
+                              Text(
+                                'ACTIVE',
+                                style: TextStyle(
+                                  color: Color(0xFF10B981),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  subtitle: Text(
-                    'Role: ${user?['role'] ?? 'Project Manager'}',
-                    style: const TextStyle(color: Color(0xFF94A3B8)),
-                  ),
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF4EDEA3).withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: const Color(0xFF4EDEA3)),
+                    const SizedBox(height: 14),
+                    const Divider(color: Color(0xFF1E2E5C), height: 1),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0284C7),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            icon: const Icon(Icons.swap_horiz_rounded, size: 18),
+                            label: const Text('Switch Persona', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                            onPressed: () => _showPersonaSwitchModal(context, provider),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFFF43F5E),
+                            side: const BorderSide(color: Color(0xFFF43F5E)),
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          icon: const Icon(Icons.logout_rounded, size: 18),
+                          label: const Text('Sign Out', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                          onPressed: () => _handleLogout(context, provider),
+                        ),
+                      ],
                     ),
-                    child: const Text(
-                      'ONLINE',
-                      style: TextStyle(
-                        color: Color(0xFF4EDEA3),
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  ],
                 ),
               ),
 
@@ -547,6 +648,245 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Future<void> _handleLogout(BuildContext context, AppProvider provider) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF162347),
+        title: const Text('Confirm Sign Out', style: TextStyle(color: Color(0xFFF1F5F9), fontWeight: FontWeight.bold)),
+        content: const Text(
+          'Are you sure you want to sign out of Nirmaan OS? Any offline queued mutations will remain cached safely.',
+          style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('CANCEL', style: TextStyle(color: Color(0xFF94A3B8))),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF43F5E)),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('SIGN OUT', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true && context.mounted) {
+      await provider.logout();
+      if (context.mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false,
+        );
+      }
+    }
+  }
+
+  void _showPersonaSwitchModal(BuildContext context, AppProvider provider) {
+    final activeId = provider.currentUser?['id'];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF0B1326),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.75,
+          minChildSize: 0.5,
+          maxChildSize: 0.92,
+          expand: false,
+          builder: (_, scrollController) {
+            return Container(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 44,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF334155),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Switch Enterprise Role',
+                            style: TextStyle(
+                              color: Color(0xFFF1F5F9),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            'Instant 1-tap live persona switching',
+                            style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Color(0xFF94A3B8)),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  const Divider(color: Color(0xFF1E2E5C), height: 1),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: ListView.separated(
+                      controller: scrollController,
+                      itemCount: kAllPersonas.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 10),
+                      itemBuilder: (_, index) {
+                        final persona = kAllPersonas[index];
+                        final isCurrent = persona.id == activeId;
+
+                        return InkWell(
+                          onTap: () async {
+                            Navigator.pop(ctx);
+                            await provider.loginUser(persona.toUserData());
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: const Color(0xFF162347),
+                                  content: Row(
+                                    children: [
+                                      Icon(persona.icon, color: persona.accentColor, size: 20),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          'Switched to ${persona.name} (${persona.role})',
+                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: isCurrent
+                                  ? persona.accentColor.withValues(alpha: 0.12)
+                                  : const Color(0xFF162347),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isCurrent
+                                    ? persona.accentColor
+                                    : const Color(0xFF26396E),
+                                width: isCurrent ? 1.5 : 1.0,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor: persona.accentColor.withValues(alpha: 0.2),
+                                  child: Icon(persona.icon, color: persona.accentColor, size: 20),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              persona.name,
+                                              style: TextStyle(
+                                                color: isCurrent ? Colors.white : const Color(0xFFE2E8F0),
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: persona.accentColor.withValues(alpha: 0.2),
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              persona.category,
+                                              style: TextStyle(
+                                                color: persona.accentColor,
+                                                fontSize: 9,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        persona.role,
+                                        style: TextStyle(
+                                          color: persona.accentColor,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'FIDIC: ${persona.fidicRole}',
+                                        style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                if (isCurrent)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: persona.accentColor,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: const Text(
+                                      'ACTIVE',
+                                      style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+                                    ),
+                                  )
+                                else
+                                  const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF64748B), size: 14),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

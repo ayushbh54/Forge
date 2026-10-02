@@ -30,6 +30,7 @@ import 'package:nirmaan_app/screens/lean/last_planner_lookahead_screen.dart';
 import 'package:nirmaan_app/screens/bim/bim_4d_viewer_screen.dart';
 import 'package:nirmaan_app/screens/logistics/global_supply_chain_screen.dart';
 import 'package:nirmaan_app/screens/contracts/fidic_claim_shield_screen.dart';
+import 'package:nirmaan_app/core/models/persona_model.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -131,6 +132,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           _buildTopBrandingRow(context, currentProject),
                           const SizedBox(height: 12),
                           _buildOmniSearchBar(context),
+                          const SizedBox(height: 12),
+                          _buildRoleCockpitBanner(context, provider),
                         ],
                       ),
                     ),
@@ -1545,6 +1548,599 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ===========================================================================
+  // DYNAMIC ROLE COCKPIT HERO BANNER (Sync with Web Personas)
+  // ===========================================================================
+  Widget _buildRoleCockpitBanner(BuildContext context, AppProvider provider) {
+    final user = provider.currentUser;
+    final persona = getPersonaForUser(user);
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            persona.accentColor.withValues(alpha: 0.16),
+            const Color(0xFF162347),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: persona.accentColor.withValues(alpha: 0.4),
+          width: 1.2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: persona.accentColor.withValues(alpha: 0.25),
+                child: Icon(persona.icon, color: persona.accentColor, size: 20),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'Active Cockpit: ${user?['name'] ?? persona.name}',
+                            style: const TextStyle(
+                              color: Color(0xFFF1F5F9),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: persona.accentColor.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: persona.accentColor.withValues(alpha: 0.5)),
+                          ),
+                          child: Text(
+                            persona.category,
+                            style: TextStyle(
+                              color: persona.accentColor,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${user?['role'] ?? persona.role} · ${persona.fidicRole}',
+                      style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              // Switch role quick button
+              InkWell(
+                onTap: () => _showPersonaSwitchModal(context, provider),
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E2E5C),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFF38BDF8).withValues(alpha: 0.4)),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.swap_horiz_rounded, size: 14, color: Color(0xFF38BDF8)),
+                      SizedBox(width: 4),
+                      Text(
+                        'Switch',
+                        style: TextStyle(
+                          color: Color(0xFF38BDF8),
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          // Role-specific 1-tap quick action chips
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            children: _buildRoleActionChips(context, persona),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildRoleActionChips(BuildContext context, PersonaModel persona) {
+    if (persona.category == 'ADMIN') {
+      return [
+        _buildRoleChip(
+          context,
+          icon: Icons.shield_rounded,
+          label: 'FIDIC Cl. 8.4 Shield',
+          color: const Color(0xFFFFB95F),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FidicClaimShieldScreen())),
+        ),
+        _buildRoleChip(
+          context,
+          icon: Icons.hub_rounded,
+          label: 'Universal Truth Hub',
+          color: const Color(0xFF38BDF8),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UniversalTruthEngineScreen())),
+        ),
+      ];
+    } else if (persona.category == 'STAFF') {
+      return [
+        _buildRoleChip(
+          context,
+          icon: Icons.mic_rounded,
+          label: 'Voice DPR (AI Speech)',
+          color: const Color(0xFF10B981),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VoiceAssistantScreen())),
+        ),
+        _buildRoleChip(
+          context,
+          icon: Icons.account_tree_rounded,
+          label: 'WBS L1-L6 Floats',
+          color: const Color(0xFF818CF8),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ScheduleScreen())),
+        ),
+      ];
+    } else if (persona.category == 'SPECIALIST') {
+      if (persona.id == 'USR-QA-04') {
+        return [
+          _buildRoleChip(
+            context,
+            icon: Icons.waves_rounded,
+            label: 'AUT Phased Array NDT',
+            color: const Color(0xFF10B981),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AutPhasedArrayScreen())),
+          ),
+          _buildRoleChip(
+            context,
+            icon: Icons.workspace_premium_rounded,
+            label: 'Golden Weld Signoff',
+            color: const Color(0xFFFFB95F),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GoldenWeldCertificationScreen())),
+          ),
+        ];
+      } else if (persona.id == 'USR-HSE-05') {
+        return [
+          _buildRoleChip(
+            context,
+            icon: Icons.local_fire_department_rounded,
+            label: 'Live Hot/Cold PTW',
+            color: const Color(0xFFF43F5E),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PtwLiveScreen())),
+          ),
+          _buildRoleChip(
+            context,
+            icon: Icons.verified_user_rounded,
+            label: 'Zero-Harm Audit Trail',
+            color: const Color(0xFF38BDF8),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AuditScreen())),
+          ),
+        ];
+      } else {
+        return [
+          _buildRoleChip(
+            context,
+            icon: Icons.qr_code_scanner_rounded,
+            label: 'Heat Number Tally',
+            color: const Color(0xFFA855F7),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PipeHeatTallyScreen())),
+          ),
+          _buildRoleChip(
+            context,
+            icon: Icons.inventory_2_rounded,
+            label: 'QR Pipe Yard Scanner',
+            color: const Color(0xFF38BDF8),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QrMaterialScannerScreen())),
+          ),
+        ];
+      }
+    } else {
+      // LABOUR
+      return [
+        _buildRoleChip(
+          context,
+          icon: Icons.badge_rounded,
+          label: 'Digital Labour Badge ID',
+          color: const Color(0xFF06B6D4),
+          onTap: () => _showWorkerIdSheet(context, persona),
+        ),
+        _buildRoleChip(
+          context,
+          icon: Icons.record_voice_over_rounded,
+          label: 'Voice Shift DPR (Hindi)',
+          color: const Color(0xFF10B981),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VoiceAssistantScreen())),
+        ),
+      ];
+    }
+  }
+
+  Widget _buildRoleChip(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withValues(alpha: 0.5)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 5),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showWorkerIdSheet(BuildContext context, PersonaModel persona) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF0B1326),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 44,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF334155),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 26,
+                    backgroundColor: persona.accentColor.withValues(alpha: 0.25),
+                    child: Icon(persona.icon, color: persona.accentColor, size: 28),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          persona.name,
+                          style: const TextStyle(
+                            color: Color(0xFFF1F5F9),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Badge: WRK-1003 · Gang A',
+                          style: TextStyle(color: persona.accentColor, fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                        const Text(
+                          'Oil India Duliajan Pipeline Spread',
+                          style: TextStyle(color: Color(0xFF94A3B8), fontSize: 11),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: const Color(0xFF10B981)),
+                    ),
+                    child: const Text(
+                      'VERIFIED',
+                      style: TextStyle(color: Color(0xFF10B981), fontSize: 10, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Divider(color: Color(0xFF1E2E5C), height: 1),
+              const SizedBox(height: 14),
+              _buildWorkerMetaRow('Certified Trade', 'API 1104 / ASME Sec IX 6G Welder'),
+              const SizedBox(height: 8),
+              _buildWorkerMetaRow('Safety Passport', 'CSWIP 3.1 & Confined Space (Valid to 2028)'),
+              const SizedBox(height: 8),
+              _buildWorkerMetaRow('Biometric Status', 'Geofence Verified (4.2m from Digboi Trench)'),
+              const SizedBox(height: 8),
+              _buildWorkerMetaRow('Shift Wage Ledger', '₹1,850.00 / Shift · Direct Bank Linked'),
+              const SizedBox(height: 8),
+              _buildWorkerMetaRow('AI Spoof Shield', 'Active Liveness Verification Score: 99.8%'),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0284C7),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  icon: const Icon(Icons.qr_code_2_rounded, color: Colors.white, size: 20),
+                  label: const Text('PRESENT GATE PASS QR', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  onPressed: () => Navigator.pop(ctx),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildWorkerMetaRow(String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 125,
+          child: Text(label, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11)),
+        ),
+        const Text(': ', style: TextStyle(color: Color(0xFF64748B), fontSize: 11)),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(color: Color(0xFFF1F5F9), fontSize: 11, fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showPersonaSwitchModal(BuildContext context, AppProvider provider) {
+    final activeId = provider.currentUser?['id'];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF0B1326),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.75,
+          minChildSize: 0.5,
+          maxChildSize: 0.92,
+          expand: false,
+          builder: (_, scrollController) {
+            return Container(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 44,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF334155),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Switch Enterprise Role',
+                            style: TextStyle(
+                              color: Color(0xFFF1F5F9),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            'Instant 1-tap live persona switching',
+                            style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Color(0xFF94A3B8)),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  const Divider(color: Color(0xFF1E2E5C), height: 1),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: ListView.separated(
+                      controller: scrollController,
+                      itemCount: kAllPersonas.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 10),
+                      itemBuilder: (_, index) {
+                        final persona = kAllPersonas[index];
+                        final isCurrent = persona.id == activeId;
+
+                        return InkWell(
+                          onTap: () async {
+                            Navigator.pop(ctx);
+                            await provider.loginUser(persona.toUserData());
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: const Color(0xFF162347),
+                                  content: Row(
+                                    children: [
+                                      Icon(persona.icon, color: persona.accentColor, size: 20),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          'Switched to ${persona.name} (${persona.role})',
+                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: isCurrent
+                                  ? persona.accentColor.withValues(alpha: 0.12)
+                                  : const Color(0xFF162347),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isCurrent
+                                    ? persona.accentColor
+                                    : const Color(0xFF26396E),
+                                width: isCurrent ? 1.5 : 1.0,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor: persona.accentColor.withValues(alpha: 0.2),
+                                  child: Icon(persona.icon, color: persona.accentColor, size: 20),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              persona.name,
+                                              style: TextStyle(
+                                                color: isCurrent ? Colors.white : const Color(0xFFE2E8F0),
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: persona.accentColor.withValues(alpha: 0.2),
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              persona.category,
+                                              style: TextStyle(
+                                                color: persona.accentColor,
+                                                fontSize: 9,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        persona.role,
+                                        style: TextStyle(
+                                          color: persona.accentColor,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'FIDIC: ${persona.fidicRole}',
+                                        style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                if (isCurrent)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: persona.accentColor,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: const Text(
+                                      'ACTIVE',
+                                      style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+                                    ),
+                                  )
+                                else
+                                  const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF64748B), size: 14),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             );
           },
         );
