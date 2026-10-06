@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Sidebar } from '../../components/Sidebar';
 import { Header } from '../../components/Header';
 import { InteractiveDprView } from '../../components/InteractiveDprView';
+import { LoginGateway } from '../../components/LoginGateway';
 import { GeminiBrainModal } from '../../components/GeminiBrainModal';
 import { VoiceCommandModal } from '../../components/VoiceCommandModal';
 import { ProjectOnboardModal } from '../../components/ProjectOnboardModal';
@@ -11,10 +12,14 @@ import { useWorkspace } from '../../context/WorkspaceContext';
 
 export default function DprPage() {
   const workspace = useWorkspace();
-  const { user, currentProject, activities, conflicts, submitDpr, submitVoiceUpdate, refreshData, sidebarCollapsed } = workspace;
+  const { user, isAuthenticated, currentProject, activities, conflicts, submitDpr, submitVoiceUpdate, refreshData, sidebarCollapsed } = workspace;
   const [isGeminiOpen, setIsGeminiOpen] = useState(false);
   const [isVoiceOpen, setIsVoiceOpen] = useState(false);
   const [isOnboardOpen, setIsOnboardOpen] = useState(false);
+
+  if (!isAuthenticated) {
+    return <LoginGateway onLoginSuccess={() => refreshData()} />;
+  }
 
   return (
     <div className="min-h-screen bg-background text-on-surface">

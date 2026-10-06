@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Sidebar } from '../../components/Sidebar';
 import { Header } from '../../components/Header';
 import { WorkforceAttendanceView } from '../../components/WorkforceAttendanceView';
+import { LoginGateway } from '../../components/LoginGateway';
 import { WorkerRegistrationModal } from '../../components/WorkerRegistrationModal';
 import { GeminiBrainModal } from '../../components/GeminiBrainModal';
 import { ProjectOnboardModal } from '../../components/ProjectOnboardModal';
@@ -11,10 +12,14 @@ import { useWorkspace } from '../../context/WorkspaceContext';
 
 export default function WorkforcePage() {
   const workspace = useWorkspace();
-  const { user, currentProject, workers, conflicts, clockInWorker, refreshData, sidebarCollapsed } = workspace;
+  const { user, isAuthenticated, currentProject, workers, conflicts, clockInWorker, refreshData, sidebarCollapsed } = workspace;
   const [isWorkerModalOpen, setIsWorkerModalOpen] = useState(false);
   const [isGeminiOpen, setIsGeminiOpen] = useState(false);
   const [isOnboardOpen, setIsOnboardOpen] = useState(false);
+
+  if (!isAuthenticated) {
+    return <LoginGateway onLoginSuccess={() => refreshData()} />;
+  }
 
   return (
     <div className="min-h-screen bg-background text-on-surface">

@@ -8,7 +8,10 @@ import {
   MaterialTransaction, 
   ConflictItem, 
   AuditRecord, 
-  UserProfile 
+  UserProfile,
+  DPRRecord,
+  EquipmentItem,
+  WeatherTelemetry
 } from '../types';
 
 interface RegisterParams {
@@ -32,6 +35,9 @@ interface WorkspaceContextType {
   materials: MaterialTransaction[];
   conflicts: ConflictItem[];
   auditLogs: AuditRecord[];
+  dprLogs: DPRRecord[];
+  equipment: EquipmentItem[];
+  weather: WeatherTelemetry | null;
   loading: boolean;
   toastMessage: string | null;
 
@@ -65,6 +71,7 @@ interface WorkspaceContextType {
   clockInWorker: (workerId: string) => Promise<boolean>;
   createMaterialTx: (txData: Partial<MaterialTransaction>) => Promise<boolean>;
   submitDpr: (actCode: string, qty: number, unit?: string, delay?: string, notes?: string) => Promise<boolean>;
+  recordEquipmentBreakdown: (equipmentId: string, breakdownReason: string, downtimeHours?: number, notes?: string) => Promise<boolean>;
   resolveConflict: (conflictId: string, notes?: string) => Promise<boolean>;
   submitVoiceUpdate: (actCode: string, progress: number, delayReason?: string) => Promise<boolean>;
   showToast: (msg: string) => void;
@@ -95,6 +102,9 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [materials, setMaterials] = useState<MaterialTransaction[]>([]);
   const [conflicts, setConflicts] = useState<ConflictItem[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditRecord[]>([]);
+  const [dprLogs, setDprLogs] = useState<DPRRecord[]>([]);
+  const [equipment, setEquipment] = useState<EquipmentItem[]>([]);
+  const [weather, setWeather] = useState<WeatherTelemetry | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -194,20 +204,26 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
 
       if (active) {
         // Fetch all related entities for this project in parallel
-        const [aRes, wRes, mRes, cRes, lRes] = await Promise.all([
+        const [aRes, wRes, mRes, cRes, lRes, dRes, eRes, weathRes] = await Promise.all([
           fetch(`/api/activities?projectId=${active.id}`),
           fetch(`/api/workforce?projectId=${active.id}`),
           fetch(`/api/materials?projectId=${active.id}`),
           fetch(`/api/conflicts?projectId=${active.id}`),
           fetch(`/api/audit?projectId=${active.id}`),
+          fetch(`/api/dpr?projectId=${active.id}`),
+          fetch(`/api/equipment?projectId=${active.id}`),
+          fetch(`/api/weather?projectId=${active.id}`),
         ]);
 
-        const [aData, wData, mData, cData, lData] = await Promise.all([
-          aRes.json(),
-          wRes.json(),
-          mRes.json(),
-          cRes.json(),
-          lRes.json(),
+        const [aData, wData, mData, cData, lData, dData, eData, weathData] = await Promise.all([
+          aRes.json().catch(() => ({ activities: [] })),
+          wRes.json().catch(() => ({ workers: [] })),
+          mRes.json().catch(() => ({ materials: [] })),
+          cRes.json().catch(() => ({ conflicts: [] })),
+          lRes.json().catch(() => ({ auditLogs: [] })),
+          dRes.json().catch(() => ({ records: [] })),
+          eRes.json().catch(() => ({ equipment: [] })),
+          weathRes.json().catch(() => null),
         ]);
 
         setActivities(aData.activities || []);
@@ -215,12 +231,18 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
         setMaterials(mData.materials || []);
         setConflicts(cData.conflicts || []);
         setAuditLogs(lData.auditLogs || []);
+        setDprLogs(dData.records || dData.dpr || []);
+        setEquipment(eData.equipment || []);
+        setWeather(weathData && weathData.success ? weathData : null);
       } else {
         setActivities([]);
         setWorkers([]);
         setMaterials([]);
         setConflicts([]);
         setAuditLogs([]);
+        setDprLogs([]);
+        setEquipment([]);
+        setWeather(null);
       }
     } catch (err: any) {
       console.error('Failed to load workspace data from SQLite:', err);
@@ -491,6 +513,38 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
   };
 
+  // Record Equipment Breakdown
+  const recordEquipmentBreakdown = async (equipmentId: string, breakdownReason: string, downtimeHours?: number, notes?: string): Promise<boolean> => {
+    if (!currentProject) return false;
+    try {
+      const res = await fetch('/api/equipment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: currentProject.id,
+          equipmentId,
+          breakdownReason,
+          downtimeHours: downtimeHours || 6,
+          notes,
+          reportedBy: user.name,
+          supervisorRole: user.role,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        await refreshData(currentProject.id);
+        showToast(`Equipment breakdown logged for ${equipmentId} (${downtimeHours || 6}h downtime recorded)`);
+        return true;
+      } else {
+        showToast(`Failed to record breakdown: ${data.error}`);
+        return false;
+      }
+    } catch (e: any) {
+      showToast(`Error: ${e.message}`);
+      return false;
+    }
+  };
+
   // Resolve Conflict
   const resolveConflict = async (conflictId: string, notes?: string): Promise<boolean> => {
     try {
@@ -557,6 +611,9 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
         materials,
         conflicts,
         auditLogs,
+        dprLogs,
+        equipment,
+        weather,
         loading,
         toastMessage,
 
@@ -587,6 +644,7 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
         clockInWorker,
         createMaterialTx,
         submitDpr,
+        recordEquipmentBreakdown,
         resolveConflict,
         submitVoiceUpdate,
         showToast,

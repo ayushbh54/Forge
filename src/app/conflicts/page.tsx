@@ -4,15 +4,20 @@ import React, { useState } from 'react';
 import { Sidebar } from '../../components/Sidebar';
 import { Header } from '../../components/Header';
 import { ConflictCenterView } from '../../components/ConflictCenterView';
+import { LoginGateway } from '../../components/LoginGateway';
 import { GeminiBrainModal } from '../../components/GeminiBrainModal';
 import { ProjectOnboardModal } from '../../components/ProjectOnboardModal';
 import { useWorkspace } from '../../context/WorkspaceContext';
 
 export default function ConflictsPage() {
   const workspace = useWorkspace();
-  const { user, currentProject, conflicts, resolveConflict, refreshData, sidebarCollapsed } = workspace;
+  const { user, isAuthenticated, currentProject, conflicts, resolveConflict, refreshData, sidebarCollapsed } = workspace;
   const [isGeminiOpen, setIsGeminiOpen] = useState(false);
   const [isOnboardOpen, setIsOnboardOpen] = useState(false);
+
+  if (!isAuthenticated) {
+    return <LoginGateway onLoginSuccess={() => refreshData()} />;
+  }
 
   return (
     <div className="min-h-screen bg-background text-on-surface">

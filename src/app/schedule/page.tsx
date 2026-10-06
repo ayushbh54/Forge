@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Sidebar } from '../../components/Sidebar';
 import { Header } from '../../components/Header';
 import { GanttScheduleView } from '../../components/GanttScheduleView';
+import { LoginGateway } from '../../components/LoginGateway';
 import { ProjectOnboardModal } from '../../components/ProjectOnboardModal';
 import { GeminiBrainModal } from '../../components/GeminiBrainModal';
 import { VoiceCommandModal } from '../../components/VoiceCommandModal';
@@ -11,11 +12,15 @@ import { useWorkspace } from '../../context/WorkspaceContext';
 
 export default function SchedulePage() {
   const workspace = useWorkspace();
-  const { user, currentProject, activities, conflicts, submitVoiceUpdate, refreshData, sidebarCollapsed } = workspace;
+  const { user, isAuthenticated, currentProject, activities, conflicts, submitVoiceUpdate, refreshData, sidebarCollapsed } = workspace;
   const [selectedActCode, setSelectedActCode] = useState<string>(activities[0]?.activityCode || '');
   const [isOnboardOpen, setIsOnboardOpen] = useState(false);
   const [isGeminiOpen, setIsGeminiOpen] = useState(false);
   const [isVoiceOpen, setIsVoiceOpen] = useState(false);
+
+  if (!isAuthenticated) {
+    return <LoginGateway onLoginSuccess={() => refreshData()} />;
+  }
 
   return (
     <div className="min-h-screen bg-background text-on-surface">

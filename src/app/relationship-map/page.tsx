@@ -4,16 +4,21 @@ import React, { useState } from 'react';
 import { Sidebar } from '../../components/Sidebar';
 import { Header } from '../../components/Header';
 import { RelationshipGraph } from '../../components/RelationshipGraph';
+import { LoginGateway } from '../../components/LoginGateway';
 import { GeminiBrainModal } from '../../components/GeminiBrainModal';
 import { ProjectOnboardModal } from '../../components/ProjectOnboardModal';
 import { useWorkspace } from '../../context/WorkspaceContext';
 
 export default function RelationshipMapPage() {
   const workspace = useWorkspace();
-  const { user, currentProject, activities, conflicts, refreshData, sidebarCollapsed } = workspace;
+  const { user, isAuthenticated, currentProject, activities, conflicts, refreshData, sidebarCollapsed } = workspace;
   const [isGeminiOpen, setIsGeminiOpen] = useState(false);
   const [isOnboardOpen, setIsOnboardOpen] = useState(false);
   const [selectedCode, setSelectedCode] = useState(activities[0]?.activityCode || '');
+
+  if (!isAuthenticated) {
+    return <LoginGateway onLoginSuccess={() => refreshData()} />;
+  }
 
   const activeActivity = activities.find(a => a.activityCode === selectedCode) || activities[0];
 
