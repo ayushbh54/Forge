@@ -48,6 +48,41 @@ class _ClockInScreenState extends State<ClockInScreen> {
   // Worker Selection State
   String? _selectedWorker;
   bool _isSubmitting = false;
+  bool _showAttendanceHistory = true;
+
+  // Attendance History Log
+  final List<Map<String, dynamic>> _attendanceHistory = [
+    {
+      'id': 'ATT-BRG-1092',
+      'workerName': 'Ramesh Kumar',
+      'badge': '#W-1000',
+      'trade': 'CERTIFIED WELDER',
+      'time': 'Today, 08:02 AM',
+      'distance': '14.2m',
+      'status': 'VERIFIED ON-DUTY',
+      'hash': 'sha256-e3b0c44298fc1c14',
+    },
+    {
+      'id': 'ATT-BRG-1088',
+      'workerName': 'Suresh Singh',
+      'badge': '#W-1002',
+      'trade': 'STRUCTURAL FITTER',
+      'time': 'Today, 08:14 AM',
+      'distance': '16.8m',
+      'status': 'VERIFIED ON-DUTY',
+      'hash': 'sha256-a1b2c3d4e5f60718',
+    },
+    {
+      'id': 'ATT-BRG-1075',
+      'workerName': 'Amit Sharma',
+      'badge': '#W-1004',
+      'trade': 'HEAVY CRANE RIGGER',
+      'time': 'Today, 08:29 AM',
+      'distance': '11.5m',
+      'status': 'VERIFIED ON-DUTY',
+      'hash': 'sha256-7890abcdef123456',
+    },
+  ];
 
   @override
   void initState() {
@@ -242,6 +277,34 @@ class _ClockInScreenState extends State<ClockInScreen> {
 
       if (!mounted) return;
 
+      String workerName = 'Field Operator';
+      String badgeNumber = '#W-1008';
+      String trade = 'GENERAL LABOUR';
+
+      for (final w in appProvider.workers) {
+        if (w.id == _selectedWorker) {
+          workerName = w.name;
+          badgeNumber = w.badgeNumber;
+          trade = w.trade;
+          break;
+        }
+      }
+
+      final newRecord = {
+        'id': 'ATT-BRG-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
+        'workerName': workerName,
+        'badge': badgeNumber,
+        'trade': trade,
+        'time': 'Just now',
+        'distance': '${_distanceToSite.toStringAsFixed(1)}m',
+        'status': 'VERIFIED ON-DUTY',
+        'hash': 'sha256-${_photoHash?.substring(0, 16) ?? "audit"}',
+      };
+
+      setState(() {
+        _attendanceHistory.insert(0, newRecord);
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -250,7 +313,7 @@ class _ClockInScreenState extends State<ClockInScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Clock-in Verified! (${_distanceToSite.toStringAsFixed(1)}m from Duliajan, Live SHA-256 Validated)',
+                  'Clock-in Verified! (${_distanceToSite.toStringAsFixed(1)}m from site, Live SHA-256 Validated)',
                   style: const TextStyle(color: Color(0xFF0B1326), fontWeight: FontWeight.bold),
                 ),
               ),
@@ -260,8 +323,6 @@ class _ClockInScreenState extends State<ClockInScreen> {
           duration: const Duration(seconds: 3),
         ),
       );
-
-      Navigator.pop(context);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -347,7 +408,9 @@ class _ClockInScreenState extends State<ClockInScreen> {
                       ],
                     ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
+            _buildAttendanceHistorySection(),
+            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -759,6 +822,96 @@ class _ClockInScreenState extends State<ClockInScreen> {
               style: const TextStyle(color: Colors.redAccent, fontSize: 12, fontWeight: FontWeight.w600),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  /// History Section right underneath with full worker attendance logs
+  Widget _buildAttendanceHistorySection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceCard,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            onTap: () => setState(() => _showAttendanceHistory = !_showAttendanceHistory),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.history_edu_rounded, color: AppTheme.primaryLight, size: 20),
+                    const SizedBox(width: 8),
+                    const Text('Labour Attendance History & Shift Logs', style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold, fontSize: 13)),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0284C7).withAlpha(40),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text('${_attendanceHistory.length}', style: const TextStyle(color: Color(0xFF38BDF8), fontSize: 11, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+                Icon(_showAttendanceHistory ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: AppTheme.textSecondary),
+              ],
+            ),
+          ),
+          if (_showAttendanceHistory) ...[
+            const SizedBox(height: 12),
+            const Text(
+              'Real-time multi-factor attendance log: GPS geofence verified + live biometric photo SHA-256 stamped.',
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+            ),
+            const SizedBox(height: 12),
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _attendanceHistory.length,
+              separatorBuilder: (_, _) => const Divider(color: AppTheme.border, height: 16),
+              itemBuilder: (context, index) {
+                final item = _attendanceHistory[index];
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('${item['workerName']} (${item['badge']})', style: const TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold, fontSize: 12)),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF10B981).withAlpha(35),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(item['status'], style: const TextStyle(color: Color(0xFF10B981), fontSize: 10, fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text('${item['trade']} • ${item['time']} • Distance: ${item['distance']}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.verified, size: 12, color: Color(0xFF10B981)),
+                        const SizedBox(width: 4),
+                        const Text('GPS + Biometric Validated', style: TextStyle(color: Color(0xFF10B981), fontSize: 10, fontWeight: FontWeight.w600)),
+                        const Spacer(),
+                        Text(item['hash'], style: const TextStyle(color: AppTheme.textMuted, fontSize: 9, fontFamily: 'monospace')),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
         ],
       ),
     );

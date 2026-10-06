@@ -8,7 +8,7 @@ import 'package:nirmaan_app/screens/settings/settings_screen.dart';
 
 void main() {
   group('Localization Audit Tests', () {
-    test('Verify all 10 Indian languages are supported in AppLocalizations', () {
+    test('Verify all 15 Indian languages are supported in AppLocalizations', () {
       final expectedCodes = [
         'en', // English
         'hi', // Hindi
@@ -20,9 +20,14 @@ void main() {
         'bn', // Bengali
         'gu', // Gujarati
         'as', // Assamese
+        'pa', // Punjabi
+        'or', // Odia
+        'ur', // Urdu
+        'mai', // Maithili
+        'sa', // Sanskrit
       ];
 
-      expect(AppLocalizations.supportedLanguages.length, 10);
+      expect(AppLocalizations.supportedLanguages.length, 15);
       final supportedCodes = AppLocalizations.supportedLanguages.map((l) => l.code).toList();
       for (final code in expectedCodes) {
         expect(supportedCodes.contains(code), isTrue, reason: 'Language $code must be supported');

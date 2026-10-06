@@ -64,7 +64,7 @@ void main() {
   });
 
   group('SupervisorVisitScreen Security & Anti-Spoof Audit', () {
-    testWidgets('Renders FIDIC Anti-AI disclaimer, Duliajan telemetry, and enforces Hard-Lock', (WidgetTester tester) async {
+    testWidgets('Renders Multi-Factor anti-spoof disclaimer, coordinates, and enforces Hard-Lock', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.darkTheme,
@@ -76,18 +76,18 @@ void main() {
       );
       await tester.pump();
 
-      // 1. Verify Anti-AI disclaimer with FIDIC standards & Duliajan coordinates
-      expect(find.textContaining('Anti-AI Photo Verification & FIDIC Compliance'), findsOneWidget);
+      // 1. Verify Multi-Factor Anti-AI disclaimer with bridge site coordinates
+      expect(find.textContaining('Multi-Factor Visit Verification Protocol'), findsOneWidget);
       expect(find.textContaining('27.4825° N, 95.3225° E'), findsWidgets);
 
-      // 2. Verify Live Camera Requirement
-      expect(find.textContaining('Live Site Photo Evidence'), findsOneWidget);
-      expect(find.textContaining('Capture Live Site Photo (Gallery Blocked)'), findsOneWidget);
+      // 2. Verify Dynamic Video & Spoken Captcha Requirement
+      expect(find.textContaining('Dynamic Video & Spoken Captcha'), findsOneWidget);
+      expect(find.textContaining('Record Live Video with Spoken Code'), findsOneWidget);
 
       // 3. Verify Hard-Lock: submit button is disabled when mandatory requirements are not satisfied
       final submitBtn = tester.widget<ElevatedButton>(find.byType(ElevatedButton).last);
       expect(submitBtn.onPressed, isNull, reason: 'Visit submission button must be hard-locked (onPressed: null)');
-      expect(find.textContaining('Submission Locked by Security Policy'), findsOneWidget);
+      expect(find.textContaining('Submission Locked (Complete Multi-Factor)'), findsOneWidget);
     });
   });
 }
